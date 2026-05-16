@@ -553,16 +553,37 @@ input:focus, textarea:focus { border-color: var(--accent); }
         <!-- Student login -->
         <div class="card card-accent">
           <h3 style="color:var(--accent);margin-bottom:16px;">👥 STUDENT ACCESS</h3>
-          <div style="margin-bottom:10px;">
+          <div style="margin-bottom:12px;">
             <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">TEAM NAME</label>
             <input type="text" id="inp-team" placeholder="e.g. DEAL HUNTERS" />
           </div>
-          <div style="margin-bottom:10px;">
-            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">MEMBERS (CA-IE format)</label>
-            <input type="text" id="inp-members" placeholder="CA-IE, CA-IE, CA-IE..." />
+          <div style="margin-bottom:6px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:8px;">TEAM MEMBERS — CA-IE format (2 to 5 players)</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;">PLAYER 1 *</label>
+                <input type="text" id="inp-m1" placeholder="CA-IE" maxlength="5" style="text-transform:uppercase;font-family:var(--font-mono);" oninput="this.value=this.value.toUpperCase()"/>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;">PLAYER 2 *</label>
+                <input type="text" id="inp-m2" placeholder="CA-IE" maxlength="5" style="text-transform:uppercase;font-family:var(--font-mono);" oninput="this.value=this.value.toUpperCase()"/>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;">PLAYER 3</label>
+                <input type="text" id="inp-m3" placeholder="CA-IE" maxlength="5" style="text-transform:uppercase;font-family:var(--font-mono);" oninput="this.value=this.value.toUpperCase()"/>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;">PLAYER 4</label>
+                <input type="text" id="inp-m4" placeholder="CA-IE" maxlength="5" style="text-transform:uppercase;font-family:var(--font-mono);" oninput="this.value=this.value.toUpperCase()"/>
+              </div>
+              <div>
+                <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;">PLAYER 5</label>
+                <input type="text" id="inp-m5" placeholder="CA-IE" maxlength="5" style="text-transform:uppercase;font-family:var(--font-mono);" oninput="this.value=this.value.toUpperCase()"/>
+              </div>
+            </div>
           </div>
           <div id="student-err" class="alert alert-danger" style="display:none;"></div>
-          <button class="btn btn-primary" style="width:100%;margin-top:6px;" onclick="studentLogin()">ENTER MISSION ▶</button>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px;" onclick="studentLogin()">ENTER MISSION ▶</button>
         </div>
 
         <!-- Teacher login -->
@@ -681,7 +702,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
       </div>
 
       <div id="l1-next-section" style="display:none;text-align:center;padding:20px 0;">
-        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 2.</p>
+        <button class="btn btn-primary" onclick="goToLevel(2)">PROCEED TO LEVEL 2 ▶</button>
       </div>
     </div>
     <footer>Créé par C. Iemfre</footer>
@@ -748,7 +769,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
       </div>
 
       <div id="l2-next-section" style="display:none;text-align:center;padding:20px 0;">
-        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 3.</p>
+        <button class="btn btn-primary" onclick="goToLevel(3)">PROCEED TO LEVEL 3 ▶</button>
       </div>
     </div>
     <footer>Créé par C. Iemfre</footer>
@@ -843,7 +864,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
       </div>
 
       <div id="l3-next-section" style="display:none;text-align:center;padding:20px 0;">
-        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 4.</p>
+        <button class="btn btn-primary" onclick="goToLevel(4)">PROCEED TO LEVEL 4 ▶</button>
       </div>
     </div>
     <footer>Créé par C. Iemfre</footer>
@@ -920,7 +941,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
       </div>
 
       <div id="l4-next-section" style="display:none;text-align:center;padding:20px 0;">
-        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 5.</p>
+        <button class="btn btn-primary" onclick="goToLevel(5)">PROCEED TO LEVEL 5 ▶</button>
       </div>
     </div>
     <footer>Créé par C. Iemfre</footer>
@@ -1208,40 +1229,46 @@ input:focus, textarea:focus { border-color: var(--accent); }
 const PROF_CODE = '0504';
 const FINAL_CODE = 'YOU ARE THE BEST SALESTEAM';
 const FRAGMENTS = ['YOU', 'ARE', 'THE', 'BEST', 'SALESTEAM'];
-const LEVEL_UNLOCK_CODES = { 2:'UNLOCK2', 3:'UNLOCK3', 4:'UNLOCK4', 5:'UNLOCK5' };
+function goToLevel(n) {
+  state.currentLevel = n;
+  saveState();
+  showPage(`page-level${n}`);
+  initLevel(n);
+  updateHUD();
+}
 
 // ── Oral thresholds ──
 const ORAL_THRESHOLDS = { L3E1:8, L3E2:7, L5E1:8, L5E2:7, L5E3:7 };
 
 // ── Level 1 QCM data ──
 const L1_EX1_DATA = [
-  { q:'What does "cold calling" mean?', opts:['Calling a client after a meeting','Calling a prospect with no prior contact','Calling a client to complain','Calling a supplier for a discount'], ans:1 },
-  { q:'A "value proposition" is:', opts:['The price of a product','A unique benefit offered to the customer','A legal contract','A financial forecast'], ans:1 },
-  { q:'What is a "lead" in sales?', opts:['A discount code','A potential customer','A signed contract','A sales report'], ans:1 },
-  { q:'CRM stands for:', opts:['Customer Revenue Management','Commercial Relationship Model','Customer Relationship Management','Corporate Resource Marketing'], ans:2 },
-  { q:'What is "upselling"?', opts:['Selling to a new market','Encouraging a customer to buy a cheaper product','Persuading a customer to buy a more expensive product or upgrade','Offering a refund'], ans:2 },
-  { q:'"Churn rate" refers to:', opts:['The speed of a sales call','The percentage of customers who stop using a service','The number of new clients per month','The company profit margin'], ans:1 },
-  { q:'A "prospect" is:', opts:['A current loyal client','A potential client not yet converted','An investor','A product feature'], ans:1 },
-  { q:'What does B2B mean?', opts:['Business to Buyer','Brand to Brand','Business to Business','Budget to Balance'], ans:2 },
-  { q:'"Pipeline" in sales refers to:', opts:['The IT infrastructure','The stages a deal goes through before closing','The supply chain','A type of contract'], ans:1 },
-  { q:'What is a "pitch deck"?', opts:['A stack of business cards','A presentation used to sell a product or idea','A financial audit report','A price list'], ans:1 },
-  { q:'To "convert" a lead means:', opts:['To reject the deal','To turn a prospect into a paying customer','To offer a discount','To send a follow-up email'], ans:1 },
-  { q:'"Quota" in a sales context is:', opts:['A legal limit on sales','A target number or value that a salesperson must achieve','A type of contract','A client complaint'], ans:1 },
+  { q:'What does "cold calling" mean?', opts:['Following up with an existing client','Contacting a prospect with no prior relationship','Calling back after a missed appointment','Negotiating a contract renewal by phone'], ans:1 },
+  { q:'A "value proposition" is:', opts:['A statement explaining why clients should choose your solution over competitors','The list price of a product in a sales catalogue','A clause defining payment terms in a contract','A calculation of the expected return on investment'], ans:0 },
+  { q:'What is a "lead" in a commercial context?', opts:['A confirmed sales appointment in the CRM','A signed purchase order from a client','A potential customer who has shown some interest','A KPI used to track monthly revenue'], ans:2 },
+  { q:'CRM stands for:', opts:['Customer Revenue Monitoring','Customer Relationship Management','Commercial Reporting Mechanism','Corporate Resource Matrix'], ans:1 },
+  { q:'What is "upselling"?', opts:['Selling a complementary product alongside the main purchase','Offering a discount to close a deal faster','Encouraging a client to choose a more expensive or premium option','Expanding into a new geographical market'], ans:2 },
+  { q:'"Churn rate" measures:', opts:['The speed at which new leads enter the pipeline','The percentage of clients who stop using a service over a given period','The average number of deals closed per month','The time between a prospect\'s first contact and contract signature'], ans:1 },
+  { q:'A "prospect" differs from a "client" because:', opts:['A prospect has already signed a contract','A prospect is a potential buyer who has not yet made a purchase','A prospect is an internal contact in the sales team','A prospect only refers to B2C customers'], ans:1 },
+  { q:'B2B refers to:', opts:['Sales made directly to individual consumers','Transactions between a business and its bank','Commercial exchanges between two companies','Marketing campaigns targeting both businesses and consumers'], ans:2 },
+  { q:'In sales, a "pipeline" is:', opts:['The internal IT infrastructure used by the sales team','The set of ongoing deals at different stages of the sales process','The legal procedure for signing a commercial agreement','The communication channel between sales and marketing'], ans:1 },
+  { q:'A "pitch deck" is used to:', opts:['Track weekly sales performance indicators','Send a formal quotation to a prospect','Present a company, product or project to clients or investors','Document the steps of the after-sales support process'], ans:2 },
+  { q:'To "convert" a lead means:', opts:['To qualify the lead before passing it to a senior salesperson','To turn a prospect into a paying customer','To follow up after an unsuccessful demo','To transfer the lead to the customer success team'], ans:1 },
+  { q:'A sales "quota" is:', opts:['A legal cap on the number of contracts per salesperson','A commercial performance target to be reached over a given period','A minimum discount a salesperson can offer without approval','A measure of client satisfaction used in annual reviews'], ans:1 },
 ];
 
 const L1_EX2_DATA = [
-  { q:'What does "cross-selling" mean?', opts:['Selling internationally','Selling a complementary product to an existing customer','Refusing a sale','Selling at a discount'], ans:1 },
-  { q:'An "SDR" (Sales Development Representative) mainly:', opts:['Closes deals','Manages accounts','Qualifies leads and books appointments','Handles customer support'], ans:2 },
-  { q:'"Objection handling" in sales means:', opts:['Refusing client demands','Addressing concerns or resistance from a prospect','Writing a complaint letter','Negotiating a salary'], ans:1 },
-  { q:'What is a "KPI" in a commercial context?', opts:['Key Product Information','Key Performance Indicator','Knowledge Process Integration','Key Partner Invoice'], ans:1 },
-  { q:'A "sales funnel" describes:', opts:['A company hierarchy','The stages from awareness to purchase','A pricing strategy','A communication tool'], ans:1 },
-  { q:'"BATNA" stands for:', opts:['Best Alternative To a Negotiated Agreement','Business Action Team Negotiation Analysis','Budget Analysis Total Net Asset','Brand Awareness Target Number Allocation'], ans:0 },
-  { q:'What does "onboarding" mean for a new client?', opts:['Ending the client relationship','The process of integrating and training a new client','Sending an invoice','Escalating a complaint'], ans:1 },
-  { q:'A "follow-up" in sales is:', opts:['A new product launch','A contact made after an initial meeting to maintain engagement','A legal action','A refund request'], ans:1 },
-  { q:'"Margin" refers to:', opts:['The size of the market','The difference between selling price and cost','The client satisfaction score','The number of sales calls per day'], ans:1 },
-  { q:'What is "account management"?', opts:['Managing company finances','Maintaining and developing relationships with existing clients','Opening a new bank account','Tracking competitor activity'], ans:1 },
-  { q:'A "win-win" negotiation means:', opts:['One party gains, one loses','Both parties are satisfied with the outcome','The deal is cancelled','The client pays less than expected'], ans:1 },
-  { q:'"Market share" is:', opts:['The amount spent on marketing','The percentage of total market sales held by a company','The number of competitors','The price of a product on the market'], ans:1 },
+  { q:'What does "cross-selling" mean?', opts:['Expanding sales to international markets','Offering a related or complementary product to an existing customer','Reducing the price to close a deal quickly','Transferring a client account to another sales rep'], ans:1 },
+  { q:'An SDR (Sales Development Representative) is mainly responsible for:', opts:['Closing high-value contracts','Managing long-term client accounts','Qualifying leads and booking sales appointments','Handling post-sale technical support'], ans:2 },
+  { q:'"Objection handling" in a sales context means:', opts:['Formally refusing a client\'s request in writing','Escalating a complaint to senior management','Responding professionally to a prospect\'s doubts or resistance','Renegotiating contract terms after a failed delivery'], ans:2 },
+  { q:'What is a "KPI" in commercial activity?', opts:['A type of client satisfaction survey','A measurable indicator used to evaluate commercial performance','A pricing formula applied to B2B contracts','A planning tool used in quarterly budget reviews'], ans:1 },
+  { q:'A "sales funnel" represents:', opts:['The hierarchy of the sales team','The sequence of stages from initial contact to final purchase','A method for calculating profit margins','A tool for managing post-sale customer relationships'], ans:1 },
+  { q:'"BATNA" stands for:', opts:['Best Alternative To a Negotiated Agreement','Business Action Team for Negotiation Analysis','Budget Allocation and Target Net Amount','Brand Awareness Tracking in a New Area'], ans:0 },
+  { q:'"Onboarding" a new client refers to:', opts:['The initial cold call made to introduce a product','The process of integrating and training a new client to use the product','Sending a welcome email after contract signature','Transferring a client file to the invoicing department'], ans:1 },
+  { q:'A "follow-up" in sales is:', opts:['A legal notice sent after a missed payment','A formal complaint filed by an unsatisfied client','A contact made after a meeting to keep the relationship active','A second quotation sent when the first is rejected'], ans:2 },
+  { q:'"Gross margin" refers to:', opts:['The total revenue generated by a sales team in a quarter','The difference between the selling price and the cost of goods sold','The percentage of market share gained in a new territory','The number of deals closed compared to the number of proposals sent'], ans:1 },
+  { q:'"Account management" involves:', opts:['Opening and managing company bank accounts','Maintaining and developing ongoing relationships with existing clients','Tracking competitor pricing and market positioning','Producing monthly financial reports for the board'], ans:1 },
+  { q:'A "win-win" negotiation outcome means:', opts:['One party makes all the concessions to save the deal','Both parties reach an agreement they consider satisfactory','The buyer gets a discount and the seller keeps the margin','The contract is signed faster than expected'], ans:1 },
+  { q:'"Market share" is defined as:', opts:['The total marketing budget allocated to a product launch','A company\'s portion of total sales in a given market','The number of active clients compared to inactive ones','The growth rate of a company\'s revenue over two years'], ans:1 },
 ];
 
 // ── Level 2 T/F data ──
@@ -1258,16 +1285,15 @@ const L2_TF_DATA = [
   { s:'The board expects a revised plan within 60 days.', ans:false },
 ];
 
-// ── Level 2 QCM data ──
 const L2_QCM_DATA = [
-  { q:'What type of companies does DealForce primarily target?', opts:['Large multinationals','SMEs','Government agencies','Retail chains'], ans:1 },
-  { q:'By how much have customer acquisition costs risen?', opts:['12%','18%','34%','50%'], ans:2 },
-  { q:'What has happened to the average sales cycle?', opts:['It has shortened','It has stayed the same','It has lengthened to 31 days','It has been removed'], ans:2 },
-  { q:'What does the marketing team identify as the main problem?', opts:['Poor product quality','Mismatch between value proposition and messaging','Lack of sales staff','High pricing'], ans:1 },
-  { q:'Which feature are many prospects unaware of?', opts:['Pricing tools','Customer support chat','Automation features','Mobile app'], ans:2 },
-  { q:'What does the sales director recommend first?', opts:['Hiring new SDRs','Lowering prices','Auditing the pitch deck','Expanding to new markets'], ans:2 },
-  { q:'What does SDR stand for in the text?', opts:['Sales Data Report','Sales Director Representative','Sales Development Representative','Strategic Deal Runner'], ans:2 },
-  { q:'What is the deadline for submitting the revised commercial plan?', opts:['15 days','30 days','60 days','90 days'], ans:1 },
+  { q:'What type of companies does DealForce primarily target?', opts:['Large multinationals with global operations','SMEs looking for affordable CRM solutions','Government agencies and public sector organisations','Retail chains with over 500 employees'], ans:1 },
+  { q:'By how much have customer acquisition costs risen?', opts:['12%','18%','34%','47%'], ans:2 },
+  { q:'What has happened to the average sales cycle?', opts:['It has shortened from 31 days to 18 days','It has remained stable at around 20 days','It has lengthened from 18 to 31 days','It has been eliminated thanks to automation'], ans:2 },
+  { q:'According to the marketing team, what is the main problem?', opts:['The product is too expensive for the SME market','The sales team lacks experience in B2B environments','The value proposition does not match the cold outreach messaging','The onboarding support is too slow to satisfy new clients'], ans:2 },
+  { q:'Which DealForce feature are many prospects unaware of?', opts:['The CRM mobile application','The integration with LinkedIn Sales Navigator','The automation features','The tiered pricing model'], ans:2 },
+  { q:'What does the sales director recommend as a first action?', opts:['Recruiting more SDRs immediately','Conducting a full audit of the pitch deck','Lowering prices to match competitors','Suspending the LinkedIn prospecting campaign'], ans:1 },
+  { q:'In the text, what does "SDR" stand for?', opts:['Sales Data Repository','Senior Deal Representative','Sales Development Representative','Strategic Deployment Resource'], ans:2 },
+  { q:'What is the deadline set by the board for the revised plan?', opts:['15 days','30 days','45 days','60 days'], ans:1 },
 ];
 
 // ── Level 3 Pitch situations ──
@@ -1410,25 +1436,41 @@ function toggleIncident(id) {
 
 function studentLogin() {
   const team = document.getElementById('inp-team').value.trim().toUpperCase();
-  const members = document.getElementById('inp-members').value.trim();
   const err = document.getElementById('student-err');
+  const caieReg = /^[A-Z]{2}-[A-Z]{2}$/i;
 
   if (!team) { err.textContent = 'Please enter a team name.'; err.style.display='block'; return; }
-  if (!members) { err.textContent = 'Please enter team members (CA-IE format).'; err.style.display='block'; return; }
 
-  const memberList = members.split(',').map(m => m.trim()).filter(Boolean);
-  if (memberList.length < 2) { err.textContent = 'Please enter at least 2 members separated by commas.'; err.style.display='block'; return; }
+  // Collect individual player inputs
+  const rawMembers = [1,2,3,4,5].map(i => {
+    const v = document.getElementById(`inp-m${i}`)?.value.trim().toUpperCase();
+    return v || null;
+  });
+  const memberList = rawMembers.filter(Boolean);
 
-  // Check CA-IE format
-  const caieReg = /^[A-Z]{2}-[A-Z]{2}$/i;
+  if (memberList.length < 2) {
+    err.textContent = 'Please enter at least 2 players (Player 1 and Player 2 are required).';
+    err.style.display='block'; return;
+  }
+
+  // Validate CA-IE format for all filled fields
   const invalid = memberList.filter(m => !caieReg.test(m));
-  if (invalid.length) { err.textContent = `Invalid format: ${invalid.join(', ')} — use CA-IE format.`; err.style.display='block'; return; }
+  if (invalid.length) {
+    err.textContent = `Invalid format: ${invalid.join(', ')} — use CA-IE format (e.g. JA-DU).`;
+    err.style.display='block'; return;
+  }
+
+  // Check for duplicates
+  const unique = new Set(memberList);
+  if (unique.size !== memberList.length) {
+    err.textContent = 'Each player must have a unique identifier.';
+    err.style.display='block'; return;
+  }
 
   err.style.display = 'none';
   state.team = team;
   state.members = memberList;
 
-  // Try to resume
   if (!loadState(team)) {
     state.team = team;
     state.members = memberList;
