@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experts Wanted — DealForce Startup</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1a1c24;
+  --bg2: #22242e;
+  --bg3: #2b2d38;
+  --border: #3a3c4a;
+  --text: #e0e2f0;
+  --muted: #7a7c90;
+  --accent: #00e5ff;
+  --green: #00e676;
+  --red: #ff1744;
+  --yellow: #ffd740;
+  --orange: #ff6d00;
+  --purple: #d500f9;
+
+  --lvl1: #00bcd4;
+  --lvl2: #ffc107;
+  --lvl3: #ff7043;
+  --lvl4: #ab47bc;
+  --lvl5: #ef5350;
+
+  --font-title: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BG ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── PAGES ── */
+.page { display: none; min-height: 100vh; position: relative; z-index: 1; }
+.page.active { display: flex; flex-direction: column; }
+
+/* ── HUD ── */
+#hud {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 54px;
+  background: rgba(26,28,36,.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  align-items: center;
+  padding: 0 20px;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+#hud.visible { display: flex; }
+#hud-team { color: var(--accent); font-weight: 700; flex: 1; }
+#hud-level { color: var(--yellow); }
+#hud-score { color: var(--green); min-width: 90px; text-align: right; }
+#hud-dots { display: flex; gap: 6px; }
+.hud-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  transition: all .3s;
+}
+.hud-dot.active { background: var(--accent); box-shadow: 0 0 8px var(--accent); border-color: var(--accent); }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+
+/* ── CONTAINERS ── */
+.container {
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.page-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+}
+
+/* ── TYPOGRAPHY ── */
+h1 {
+  font-family: var(--font-title);
+  font-size: clamp(22px, 4vw, 38px);
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+h2 {
+  font-family: var(--font-title);
+  font-size: clamp(16px, 2.5vw, 24px);
+  letter-spacing: 1px;
+}
+h3 {
+  font-family: var(--font-title);
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+p { line-height: 1.7; font-size: 15px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.card-accent { border-color: var(--accent); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-block;
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 12px 28px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  text-transform: uppercase;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+}
+.btn-primary:hover { background: #33eeff; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0,229,255,.4); }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover { background: #ff4569; }
+.btn-success { background: var(--green); color: #000; }
+.btn-success:hover { background: #33eb91; }
+.btn-sm { padding: 8px 16px; font-size: 11px; }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+
+/* ── INPUTS ── */
+input[type=text], input[type=password], input[type=number], textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+  transition: border-color .2s;
+}
+input:focus, textarea:focus { border-color: var(--accent); }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+}
+
+/* ── ALERT ── */
+.alert {
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  border-left: 3px solid;
+}
+.alert-success { background: rgba(0,230,118,.1); border-color: var(--green); color: var(--green); }
+.alert-danger { background: rgba(255,23,68,.1); border-color: var(--red); color: var(--red); }
+.alert-info { background: rgba(0,229,255,.1); border-color: var(--accent); color: var(--accent); }
+.alert-warning { background: rgba(255,215,64,.1); border-color: var(--yellow); color: var(--yellow); }
+
+/* ── PROGRESS ── */
+.progress-bar-wrap {
+  background: var(--bg3);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+  transition: width .5s ease;
+}
+
+/* ── TIMER ── */
+.timer-box {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  text-align: center;
+  padding: 10px 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: inline-block;
+}
+.timer-box.danger { color: var(--red); border-color: var(--red); animation: pulse .5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+/* ── QCM ── */
+.qcm-question { margin-bottom: 20px; }
+.qcm-question .q-text { font-weight: 600; margin-bottom: 10px; font-size: 15px; }
+.qcm-option {
+  display: block;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .15s;
+  font-size: 14px;
+}
+.qcm-option:hover { border-color: var(--accent); }
+.qcm-option.selected { border-color: var(--accent); background: rgba(0,229,255,.12); }
+.qcm-option.correct { border-color: var(--green) !important; background: rgba(0,230,118,.15) !important; }
+.qcm-option.wrong { border-color: var(--red) !important; background: rgba(255,23,68,.12) !important; }
+
+/* ── TRUE/FALSE ── */
+.tf-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.tf-row .tf-text { flex: 1; }
+.tf-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.tf-btn.selected { background: #1a4a6e; border-color: #00bcd4; color: #00e5ff; }
+.tf-btn.correct { background: rgba(0,230,118,.2) !important; border-color: var(--green) !important; color: var(--green) !important; }
+.tf-btn.wrong { background: rgba(255,23,68,.15) !important; border-color: var(--red) !important; color: var(--red) !important; }
+
+/* ── MATCHING ── */
+.matching-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.match-col { display: flex; flex-direction: column; gap: 8px; }
+.match-item {
+  padding: 10px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .15s;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+.match-item:hover { border-color: var(--accent); }
+.match-item.selected { border-color: var(--yellow); background: rgba(255,215,64,.1); }
+.match-item.matched { border-color: var(--green); background: rgba(0,230,118,.1); cursor: default; }
+.match-item.wrong-match { border-color: var(--red); animation: shake .3s; }
+.match-item.def { font-size: 12px; color: var(--muted); }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+/* ── FRAGMENT ── */
+.fragment-reveal {
+  text-align: center;
+  padding: 30px 20px;
+  background: var(--bg2);
+  border: 2px solid var(--green);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+.fragment-word {
+  font-family: var(--font-title);
+  font-size: clamp(28px, 5vw, 48px);
+  color: var(--green);
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(0,230,118,.6);
+}
+.fragment-hint {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--yellow);
+  margin-top: 10px;
+  animation: blink 1.5s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── SCORE CHANGE ── */
+.score-pop {
+  position: fixed;
+  top: 64px;
+  right: 20px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  animation: popUp .8s ease forwards;
+  z-index: 9999;
+  pointer-events: none;
+}
+@keyframes popUp { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-40px)} }
+
+/* ── HOMEPAGE ── */
+#page-home .hero {
+  text-align: center;
+  padding: 60px 20px 40px;
+}
+.logo-box {
+  display: inline-block;
+  border: 2px solid var(--accent);
+  padding: 6px 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 700px;
+  margin: 0 auto 20px;
+}
+@media(max-width:600px){ .home-grid{grid-template-columns:1fr;} }
+
+/* ── LEVEL PAGE ── */
+.level-header {
+  padding: 70px 20px 20px;
+  text-align: center;
+}
+.level-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+.ex-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+/* ── ORAL LEVEL ── */
+.member-draw {
+  text-align: center;
+  padding: 30px;
+  background: var(--bg3);
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+.drawn-member {
+  font-family: var(--font-title);
+  font-size: 28px;
+  color: var(--orange);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* ── DASHBOARD ── */
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.dash-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--bg3);
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.dash-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.dash-table tr:hover td { background: rgba(255,255,255,.02); }
+
+/* ── FINAL PAGE ── */
+.victory-box {
+  text-align: center;
+  padding: 60px 20px;
+}
+.victory-code {
+  font-family: var(--font-title);
+  font-size: clamp(18px, 4vw, 36px);
+  letter-spacing: 6px;
+  color: var(--green);
+  text-shadow: 0 0 30px rgba(0,230,118,.5);
+  word-break: break-all;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+.tab-btn {
+  font-family: var(--font-title);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .2s;
+}
+.tab-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── ORAL UNLOCK FORM ── */
+.unlock-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+}
+.unlock-form input { max-width: 200px; }
+
+/* ── HINT BOX ── */
+.hint-box {
+  background: rgba(255,215,64,.07);
+  border: 1px solid rgba(255,215,64,.3);
+  border-radius: 6px;
+  padding: 16px;
+  margin: 16px 0;
+}
+.hint-box h4 { color: var(--yellow); font-family: var(--font-title); font-size: 12px; margin-bottom: 8px; }
+
+/* ── GRID 2 ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width:600px){ .grid2{grid-template-columns:1fr;} }
+
+/* ── SCROLL AREA ── */
+.scroll-level { flex: 1; overflow-y: auto; }
+
+/* ── INTRO ── */
+.briefing-box {
+  background: rgba(0,229,255,.05);
+  border: 1px solid rgba(0,229,255,.2);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 16px 0;
+}
+.briefing-box p + p { margin-top: 10px; }
+.rule-item { display: flex; gap: 12px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.rule-item:last-child { border-bottom: none; }
+.rule-icon { font-size: 18px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HUD
+══════════════════════════════════════════ -->
+<div id="hud">
+  <span id="hud-team">—</span>
+  <span id="hud-level">LEVEL —</span>
+  <div id="hud-dots">
+    <div class="hud-dot" id="dot0"></div>
+    <div class="hud-dot" id="dot1"></div>
+    <div class="hud-dot" id="dot2"></div>
+    <div class="hud-dot" id="dot3"></div>
+    <div class="hud-dot" id="dot4"></div>
+  </div>
+  <span id="hud-score">0 pts</span>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE HOME
+══════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="page-inner">
+    <div class="container">
+      <div class="hero">
+        <div class="logo-box">EXPERTS WANTED</div>
+        <h1>DEALFORCE<br><span style="color:var(--accent)">STARTUP</span></h1>
+        <p style="color:var(--muted);margin:16px auto;max-width:500px;font-size:15px;">
+          You are a team of sales consultants hired to evaluate a startup in crisis. Prove your skills across 5 missions to save the deal.
+        </p>
+      </div>
+
+      <div class="home-grid">
+        <!-- Student login -->
+        <div class="card card-accent">
+          <h3 style="color:var(--accent);margin-bottom:16px;">👥 STUDENT ACCESS</h3>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">TEAM NAME</label>
+            <input type="text" id="inp-team" placeholder="e.g. DEAL HUNTERS" />
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">MEMBERS (CA-IE format)</label>
+            <input type="text" id="inp-members" placeholder="CA-IE, CA-IE, CA-IE..." />
+          </div>
+          <div id="student-err" class="alert alert-danger" style="display:none;"></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:6px;" onclick="studentLogin()">ENTER MISSION ▶</button>
+        </div>
+
+        <!-- Teacher login -->
+        <div class="card">
+          <h3 style="color:var(--yellow);margin-bottom:16px;">🎓 TEACHER ACCESS</h3>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">ACCESS CODE</label>
+            <input type="password" id="inp-prof-code" placeholder="••••" />
+          </div>
+          <div id="prof-err" class="alert alert-danger" style="display:none;"></div>
+          <button class="btn btn-secondary" style="width:100%;margin-top:6px;" onclick="profLogin()">OPEN DASHBOARD ▶</button>
+          <hr class="divider">
+          <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="showPage('page-rgpd')">RGPD / Privacy</button>
+        </div>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE RGPD
+══════════════════════════════════════════ -->
+<div id="page-rgpd" class="page">
+  <div class="page-inner">
+    <div class="container" style="padding-top:40px;">
+      <h2 style="margin-bottom:20px;">RGPD / Privacy Policy</h2>
+      <div class="card">
+        <p style="color:var(--muted);font-style:italic;">This section is intentionally left blank and will be completed by the teacher.</p>
+      </div>
+      <button class="btn btn-secondary" onclick="showPage('page-home')">← BACK</button>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE INTRO
+══════════════════════════════════════════ -->
+<div id="page-intro" class="page">
+  <div class="page-inner scroll-level">
+    <div class="container" style="padding-top:30px;">
+      <div class="logo-box" style="margin-bottom:16px;">OPERATION DEALMAKER</div>
+      <h2 style="margin-bottom:20px;">MISSION BRIEFING</h2>
+
+      <div class="briefing-box">
+        <p><strong style="color:var(--accent);">SITUATION:</strong> DealForce Inc., a promising B2B SaaS startup, is on the verge of collapse. Their latest investor meeting was a disaster, their CRM is full of cold leads, and the sales team has resigned.</p>
+        <p>Your agency — <strong id="intro-team" style="color:var(--yellow);">YOUR TEAM</strong> — has been called in as <strong>external sales consultants</strong>. You have 5 sectors to investigate and fix before the company loses its biggest client.</p>
+        <p><strong style="color:var(--green);">OBJECTIVE:</strong> Complete all 5 missions, collect the 5 code fragments, and enter the final master code to close the deal.</p>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:14px;">📋 RULES OF ENGAGEMENT</h3>
+        <div class="rule-item"><span class="rule-icon">⚡</span><span>Some exercises have a timer. Speed matters — don't run out of time.</span></div>
+        <div class="rule-item"><span class="rule-icon">✅</span><span>Pass an exercise: <strong style="color:var(--green);">+50 pts</strong>. Fail: <strong style="color:var(--red);">–10 pts</strong>. Timer overrun: extra <strong style="color:var(--red);">–10 pts</strong>.</span></div>
+        <div class="rule-item"><span class="rule-icon">📝</span><span>When a code fragment appears — <strong>write it down on paper immediately</strong>. It will not be shown again.</span></div>
+        <div class="rule-item"><span class="rule-icon">🔒</span><span>Your teacher unlocks each level. You cannot skip ahead.</span></div>
+        <div class="rule-item"><span class="rule-icon">🤫</span><span>Do not share your fragments with other teams.</span></div>
+      </div>
+
+      <div style="text-align:center;margin:24px 0;">
+        <button class="btn btn-primary" onclick="goToCurrentLevel()">START MISSION ▶</button>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LEVEL 1 — The Sales Briefing Room 🔵
+══════════════════════════════════════════ -->
+<div id="page-level1" class="page">
+  <div class="page-inner scroll-level">
+    <div class="level-header">
+      <div class="level-badge" style="background:rgba(0,188,212,.15);color:var(--lvl1);border:1px solid var(--lvl1);">LEVEL 1 / 5</div>
+      <h2>THE SALES BRIEFING ROOM</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px;">Test your core sales & commercial English vocabulary</p>
+    </div>
+    <div class="container">
+      <div id="l1-ex1-section" class="ex-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3>EXERCISE 1 — Sales Vocabulary QCM</h3>
+            <p style="color:var(--muted);font-size:13px;">12 questions • 7-minute timer</p>
+          </div>
+          <div id="l1-timer" class="timer-box">07:00</div>
+        </div>
+        <div id="l1-ex1-questions"></div>
+        <div id="l1-ex1-feedback" style="display:none;"></div>
+        <div style="text-align:center;margin-top:20px;">
+          <button class="btn btn-primary" id="l1-ex1-submit" onclick="defer(()=>submitL1Ex1())">SUBMIT ANSWERS</button>
+        </div>
+      </div>
+
+      <div id="l1-ex2-section" class="ex-section" style="display:none;">
+        <h3 style="margin-bottom:6px;">EXERCISE 2 — Sales Vocabulary QCM (Round 2)</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">12 questions • No timer</p>
+        <div id="l1-ex2-questions"></div>
+        <div id="l1-ex2-feedback" style="display:none;"></div>
+        <div style="text-align:center;margin-top:20px;">
+          <button class="btn btn-primary" id="l1-ex2-submit" onclick="defer(()=>submitL1Ex2())">SUBMIT ANSWERS</button>
+        </div>
+      </div>
+
+      <div id="l1-hint-section" class="hint-box" style="display:none;">
+        <h4>💡 HINT UNLOCKED</h4>
+        <p id="l1-hint-text" style="font-size:14px;"></p>
+      </div>
+
+      <div id="l1-fragment-section" style="display:none;">
+        <div class="fragment-reveal">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono);">🔓 FRAGMENT UNLOCKED</div>
+          <div class="fragment-word" id="l1-fragment-word"></div>
+          <div class="fragment-hint">⚠ NOTE IT DOWN — DO NOT SHARE</div>
+        </div>
+      </div>
+
+      <div id="l1-next-section" style="display:none;text-align:center;padding:20px 0;">
+        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 2.</p>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LEVEL 2 — The Market Intelligence Hub 🟡
+══════════════════════════════════════════ -->
+<div id="page-level2" class="page">
+  <div class="page-inner scroll-level">
+    <div class="level-header">
+      <div class="level-badge" style="background:rgba(255,193,7,.1);color:var(--lvl2);border:1px solid var(--lvl2);">LEVEL 2 / 5</div>
+      <h2>THE MARKET INTELLIGENCE HUB</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px;">Reading comprehension — B2B market analysis report</p>
+    </div>
+    <div class="container">
+
+      <!-- Reading text -->
+      <div class="card" style="border-color:var(--lvl2);">
+        <h3 style="color:var(--lvl2);margin-bottom:12px;">📄 DOCUMENT — Market Analysis Report</h3>
+        <div style="font-size:14px;line-height:1.8;color:#ccc;">
+          <p><strong>DealForce B2B SaaS — Internal Market Report Q3</strong></p><br>
+          <p>DealForce has been operating in the B2B software sector for three years. The company targets small and medium-sized enterprises (SMEs) looking for affordable customer relationship management (CRM) solutions. Unlike its competitors, DealForce positions itself as a flexible, low-cost option with a strong focus on onboarding support.</p><br>
+          <p>However, recent data suggests a worrying trend. Customer acquisition costs (CAC) have risen by 34% over the past two quarters, while the conversion rate from free trial to paid subscription has dropped to 12%. The average sales cycle has lengthened from 18 days to 31 days.</p><br>
+          <p>The marketing team believes the problem lies in a mismatch between the product's value proposition and the messaging used in cold outreach. Many prospects report that they were not fully aware of DealForce's automation features, which are considered a key differentiator.</p><br>
+          <p>The sales director recommends a full audit of the pitch deck, a retraining programme for all SDRs (Sales Development Representatives), and an overhaul of the LinkedIn prospecting strategy. The board expects a revised commercial action plan to be submitted within 30 days.</p>
+        </div>
+      </div>
+
+      <!-- Ex1 T/F -->
+      <div id="l2-ex1-section" class="ex-section">
+        <h3 style="margin-bottom:6px;">EXERCISE 1 — True or False</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">10 statements • No timer • Pass: ≥8 correct</p>
+        <div id="l2-ex1-questions"></div>
+        <div id="l2-ex1-feedback" style="display:none;"></div>
+        <div style="text-align:center;margin-top:20px;">
+          <button class="btn btn-primary" id="l2-ex1-submit" onclick="defer(()=>submitL2Ex1())">SUBMIT</button>
+        </div>
+      </div>
+
+      <!-- Ex2 QCM -->
+      <div id="l2-ex2-section" class="ex-section" style="display:none;">
+        <h3 style="margin-bottom:6px;">EXERCISE 2 — Comprehension QCM</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">8 questions • No timer • Pass: ≥7 correct</p>
+        <div id="l2-ex2-questions"></div>
+        <div id="l2-ex2-feedback" style="display:none;"></div>
+        <div style="text-align:center;margin-top:20px;">
+          <button class="btn btn-primary" id="l2-ex2-submit" onclick="defer(()=>submitL2Ex2())">SUBMIT</button>
+        </div>
+      </div>
+
+      <div id="l2-hint-section" class="hint-box" style="display:none;">
+        <h4>💡 HINT UNLOCKED</h4>
+        <p id="l2-hint-text" style="font-size:14px;"></p>
+      </div>
+
+      <div id="l2-fragment-section" style="display:none;">
+        <div class="fragment-reveal">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono);">🔓 FRAGMENT UNLOCKED</div>
+          <div class="fragment-word" id="l2-fragment-word"></div>
+          <div class="fragment-hint">⚠ NOTE IT DOWN — DO NOT SHARE</div>
+        </div>
+      </div>
+
+      <div id="l2-next-section" style="display:none;text-align:center;padding:20px 0;">
+        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 3.</p>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LEVEL 3 — The Pitch Room 🟠
+══════════════════════════════════════════ -->
+<div id="page-level3" class="page">
+  <div class="page-inner scroll-level">
+    <div class="level-header">
+      <div class="level-badge" style="background:rgba(255,112,67,.1);color:var(--lvl3);border:1px solid var(--lvl3);">LEVEL 3 / 5</div>
+      <h2>THE PITCH ROOM</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px;">Oral performance — Sales pitch & role play</p>
+    </div>
+    <div class="container">
+      <div class="card">
+        <h3 style="color:var(--lvl3);margin-bottom:10px;">🎤 ORAL EXERCISE</h3>
+        <p style="font-size:14px;margin-bottom:12px;">One team member will be selected at random to perform a sales pitch or role play in front of the teacher. The teacher enters the score (1–10). The student then unlocks the fragment with the code provided.</p>
+        <div class="rule-item"><span class="rule-icon">🎯</span><span><strong>Ex.1:</strong> Pass ≥8 → +50pts | Fail → –10pts + Ex.2</span></div>
+        <div class="rule-item"><span class="rule-icon">🎯</span><span><strong>Ex.2:</strong> A different member is drawn | Pass ≥7 → +50pts | Fail → –10pts</span></div>
+      </div>
+
+      <div id="l3-ex1-section" class="ex-section">
+        <h3 style="margin-bottom:16px;">EXERCISE 1 — Draw a Member</h3>
+        <div id="l3-ex1-draw" class="member-draw">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Press the button to randomly select a team member</p>
+          <button class="btn btn-primary" onclick="drawMemberL3(1)">🎲 DRAW MEMBER</button>
+          <div id="l3-drawn1" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l3-member1-name"></div>
+          </div>
+        </div>
+
+        <div id="l3-ex1-situation" style="display:none;" class="briefing-box">
+          <h4 style="color:var(--orange);margin-bottom:8px;">PITCH SITUATION — EX.1</h4>
+          <p id="l3-situation1-text" style="font-size:14px;"></p>
+        </div>
+
+        <div id="l3-ex1-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l3-code1-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL3Ex1())">VALIDATE</button>
+          </div>
+          <div id="l3-ex1-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l3-ex1-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div id="l3-ex2-section" class="ex-section" style="display:none;">
+        <h3 style="margin-bottom:16px;">EXERCISE 2 — Draw Another Member</h3>
+        <div id="l3-ex2-draw" class="member-draw">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">A different member will be selected</p>
+          <button class="btn btn-primary" onclick="drawMemberL3(2)">🎲 DRAW MEMBER</button>
+          <div id="l3-drawn2" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l3-member2-name"></div>
+          </div>
+        </div>
+
+        <div id="l3-ex2-situation" style="display:none;" class="briefing-box">
+          <h4 style="color:var(--orange);margin-bottom:8px;">PITCH SITUATION — EX.2</h4>
+          <p id="l3-situation2-text" style="font-size:14px;"></p>
+        </div>
+
+        <div id="l3-ex2-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l3-code2-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL3Ex2())">VALIDATE</button>
+          </div>
+          <div id="l3-ex2-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l3-ex2-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div id="l3-hint-section" class="hint-box" style="display:none;">
+        <h4>💡 HINT UNLOCKED</h4>
+        <p id="l3-hint-text" style="font-size:14px;"></p>
+      </div>
+
+      <div id="l3-fragment-section" style="display:none;">
+        <div class="fragment-reveal">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono);">🔓 FRAGMENT UNLOCKED</div>
+          <div class="fragment-word" id="l3-fragment-word"></div>
+          <div class="fragment-hint">⚠ NOTE IT DOWN — DO NOT SHARE</div>
+        </div>
+      </div>
+
+      <div id="l3-next-section" style="display:none;text-align:center;padding:20px 0;">
+        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 4.</p>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LEVEL 4 — The Negotiation Lab 🟣
+══════════════════════════════════════════ -->
+<div id="page-level4" class="page">
+  <div class="page-inner scroll-level">
+    <div class="level-header">
+      <div class="level-badge" style="background:rgba(171,71,188,.15);color:var(--lvl4);border:1px solid var(--lvl4);">LEVEL 4 / 5</div>
+      <h2>THE NEGOTIATION LAB</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px;">Matching exercise — Commercial terminology</p>
+    </div>
+    <div class="container">
+
+      <div id="l4-ex1-section" class="ex-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3>EXERCISE 1 — Match Terms & Definitions</h3>
+            <p style="color:var(--muted);font-size:13px;">10 pairs • 6-minute timer • Pass: ≥8 matches</p>
+          </div>
+          <div id="l4-timer1" class="timer-box">06:00</div>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Click a term on the left, then its matching definition on the right.</p>
+        <div id="l4-ex1-matching" class="matching-grid"></div>
+        <div id="l4-ex1-score-bar" style="margin-top:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;">
+            <span>Matches</span><span id="l4-ex1-match-count">0 / 10</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="l4-ex1-progress" style="width:0%"></div></div>
+        </div>
+        <div id="l4-ex1-feedback" style="display:none;margin-top:12px;"></div>
+        <div style="text-align:center;margin-top:16px;">
+          <button class="btn btn-primary" id="l4-ex1-submit" onclick="defer(()=>submitL4Ex1())" disabled>SUBMIT (complete all matches first)</button>
+        </div>
+      </div>
+
+      <div id="l4-ex2-section" class="ex-section" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3>EXERCISE 2 — Match Terms & Definitions (Round 2)</h3>
+            <p style="color:var(--muted);font-size:13px;">10 pairs • 8-minute timer • Pass: ≥8 matches</p>
+          </div>
+          <div id="l4-timer2" class="timer-box">08:00</div>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Click a term on the left, then its matching definition on the right.</p>
+        <div id="l4-ex2-matching" class="matching-grid"></div>
+        <div id="l4-ex2-score-bar" style="margin-top:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px;">
+            <span>Matches</span><span id="l4-ex2-match-count">0 / 10</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="l4-ex2-progress" style="width:0%"></div></div>
+        </div>
+        <div id="l4-ex2-feedback" style="display:none;margin-top:12px;"></div>
+        <div style="text-align:center;margin-top:16px;">
+          <button class="btn btn-primary" id="l4-ex2-submit" onclick="defer(()=>submitL4Ex2())" disabled>SUBMIT (complete all matches first)</button>
+        </div>
+      </div>
+
+      <div id="l4-hint-section" class="hint-box" style="display:none;">
+        <h4>💡 HINT UNLOCKED</h4>
+        <p id="l4-hint-text" style="font-size:14px;"></p>
+      </div>
+
+      <div id="l4-fragment-section" style="display:none;">
+        <div class="fragment-reveal">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono);">🔓 FRAGMENT UNLOCKED</div>
+          <div class="fragment-word" id="l4-fragment-word"></div>
+          <div class="fragment-hint">⚠ NOTE IT DOWN — DO NOT SHARE</div>
+        </div>
+      </div>
+
+      <div id="l4-next-section" style="display:none;text-align:center;padding:20px 0;">
+        <p style="color:var(--muted);margin-bottom:16px;font-size:14px;">Wait for your teacher to unlock Level 5.</p>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LEVEL 5 — The Boardroom 🔴
+══════════════════════════════════════════ -->
+<div id="page-level5" class="page">
+  <div class="page-inner scroll-level">
+    <div class="level-header">
+      <div class="level-badge" style="background:rgba(239,83,80,.15);color:var(--lvl5);border:1px solid var(--lvl5);">LEVEL 5 / 5</div>
+      <h2>THE BOARDROOM</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px;">Oral report — Present a commercial incident file</p>
+    </div>
+    <div class="container">
+      <div class="card" style="border-color:var(--lvl5);">
+        <h3 style="color:var(--lvl5);margin-bottom:10px;">📊 ORAL REPORT EXERCISE</h3>
+        <p style="font-size:14px;margin-bottom:12px;">A team member is selected to present a commercial incident file to the board in English. The teacher scores the performance (1–10) and communicates an unlock code.</p>
+        <div class="rule-item"><span class="rule-icon">1️⃣</span><span>Ex.1: Pass ≥8 → +50pts + fragment | Fail → –10pts + Ex.2</span></div>
+        <div class="rule-item"><span class="rule-icon">2️⃣</span><span>Ex.2: New member | Pass ≥7 → +50pts + fragment | Fail → –10pts + Ex.3</span></div>
+        <div class="rule-item"><span class="rule-icon">3️⃣</span><span>Ex.3: New member | Pass ≥7 → +50pts | Fail → –10pts — fragment unlocked <strong>in all cases</strong></span></div>
+      </div>
+
+      <!-- Incident files -->
+      <div class="card">
+        <h3 style="margin-bottom:12px;">📁 INCIDENT FILES</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+          <div class="card" style="background:var(--bg3);cursor:pointer;" onclick="toggleIncident('inc1')">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--red);margin-bottom:6px;">FILE #001</div>
+            <strong style="font-size:13px;">Lost Account — RetailPro</strong>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Client churned after 6 months</p>
+          </div>
+          <div class="card" style="background:var(--bg3);cursor:pointer;" onclick="toggleIncident('inc2')">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--yellow);margin-bottom:6px;">FILE #002</div>
+            <strong style="font-size:13px;">Stalled Deal — TechNord</strong>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Negotiation frozen at proposal stage</p>
+          </div>
+          <div class="card" style="background:var(--bg3);cursor:pointer;" onclick="toggleIncident('inc3')">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--purple);margin-bottom:6px;">FILE #003</div>
+            <strong style="font-size:13px;">Complaint — EcoShop</strong>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Onboarding failed, refund requested</p>
+          </div>
+        </div>
+        <div id="inc1" style="display:none;margin-top:12px;" class="briefing-box">
+          <strong style="color:var(--red);">FILE #001 — RetailPro Account Lost</strong><br><br>
+          RetailPro signed a 12-month contract in January. After a poor onboarding experience and several unanswered support tickets, they cancelled in July. Their main complaints: the CRM was too complex, the SDR assigned to them changed twice, and they never received the promised training sessions. Annual contract value: €18,000.
+        </div>
+        <div id="inc2" style="display:none;margin-top:12px;" class="briefing-box">
+          <strong style="color:var(--yellow);">FILE #002 — TechNord Stalled Deal</strong><br><br>
+          TechNord is a 150-person IT firm in Lille. After two demos and a proposal sent in September, all contact has gone silent. The last email from their procurement manager mentioned "budget review." The deal was valued at €42,000/year. The sales rep hasn't followed up in 6 weeks.
+        </div>
+        <div id="inc3" style="display:none;margin-top:12px;" class="briefing-box">
+          <strong style="color:var(--purple);">FILE #003 — EcoShop Complaint</strong><br><br>
+          EcoShop, a sustainable retail client, purchased a 6-month starter pack. They claim the onboarding session was too short, the data migration failed, and the platform was not adapted to their industry. They are requesting a full refund of €6,500 and threatening to post a negative review on G2.
+        </div>
+      </div>
+
+      <!-- Ex1 -->
+      <div id="l5-ex1-section" class="ex-section">
+        <h3 style="margin-bottom:16px;">EXERCISE 1 — Board Presentation</h3>
+        <div id="l5-ex1-draw" class="member-draw">
+          <button class="btn btn-primary" onclick="drawMemberL5(1)">🎲 DRAW MEMBER</button>
+          <div id="l5-drawn1" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l5-member1-name"></div>
+          </div>
+        </div>
+        <div id="l5-ex1-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l5-code1-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL5(1))">VALIDATE</button>
+          </div>
+          <div id="l5-ex1-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l5-ex1-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div id="l5-ex2-section" class="ex-section" style="display:none;">
+        <h3 style="margin-bottom:16px;">EXERCISE 2 — Board Presentation</h3>
+        <div id="l5-ex2-draw" class="member-draw">
+          <button class="btn btn-primary" onclick="drawMemberL5(2)">🎲 DRAW MEMBER</button>
+          <div id="l5-drawn2" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l5-member2-name"></div>
+          </div>
+        </div>
+        <div id="l5-ex2-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l5-code2-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL5(2))">VALIDATE</button>
+          </div>
+          <div id="l5-ex2-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l5-ex2-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div id="l5-ex3-section" class="ex-section" style="display:none;">
+        <h3 style="margin-bottom:16px;">EXERCISE 3 — Final Presentation</h3>
+        <div id="l5-ex3-draw" class="member-draw">
+          <button class="btn btn-primary" onclick="drawMemberL5(3)">🎲 DRAW MEMBER</button>
+          <div id="l5-drawn3" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l5-member3-name"></div>
+          </div>
+        </div>
+        <div id="l5-ex3-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l5-code3-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL5(3))">VALIDATE</button>
+          </div>
+          <div id="l5-ex3-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l5-ex3-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <div id="l5-fragment-section" style="display:none;">
+        <div class="fragment-reveal">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono);">🔓 FRAGMENT UNLOCKED</div>
+          <div class="fragment-word" id="l5-fragment-word"></div>
+          <div class="fragment-hint">⚠ NOTE IT DOWN — DO NOT SHARE</div>
+        </div>
+      </div>
+
+      <div id="l5-next-section" style="display:none;text-align:center;padding:20px 0;">
+        <button class="btn btn-primary" onclick="showPage('page-final')">PROCEED TO FINAL CODE ▶</button>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE FINAL
+══════════════════════════════════════════ -->
+<div id="page-final" class="page">
+  <div class="page-inner">
+    <div class="container" style="padding-top:60px;">
+      <div class="victory-box">
+        <div class="logo-box" style="margin-bottom:20px;">MISSION CRITICAL</div>
+        <h2 style="margin-bottom:20px;">ENTER THE MASTER CODE</h2>
+        <p style="color:var(--muted);margin-bottom:24px;">Assemble your 5 fragments and enter the complete code below.</p>
+        <input type="text" id="final-code-inp" placeholder="_ _ _ _ _  _ _ _  _ _ _  _ _ _ _  _ _ _ _ _ _ _ _"
+          style="text-align:center;font-family:var(--font-mono);font-size:18px;letter-spacing:3px;text-transform:uppercase;max-width:600px;"
+          oninput="this.value=this.value.toUpperCase()">
+        <div style="margin-top:16px;">
+          <button class="btn btn-primary" onclick="defer(()=>submitFinalCode())">SUBMIT MASTER CODE</button>
+        </div>
+        <div id="final-feedback" style="margin-top:16px;"></div>
+      </div>
+
+      <div id="victory-section" style="display:none;text-align:center;padding:20px;">
+        <div style="font-size:48px;margin-bottom:16px;">🏆</div>
+        <h2 style="color:var(--green);margin-bottom:12px;">MISSION COMPLETE</h2>
+        <div class="victory-code" id="victory-code-display"></div>
+        <p style="color:var(--muted);margin:16px 0;font-size:14px;">DealForce is saved. The deal is closed. Your team proved its worth.</p>
+        <div id="victory-score" style="font-family:var(--font-mono);font-size:24px;color:var(--yellow);margin-bottom:24px;"></div>
+        <button class="btn btn-success" onclick="generatePDFReport()">⬇ DOWNLOAD TEAM REPORT</button>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DASHBOARD
+══════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="page-inner scroll-level">
+    <div class="container" style="padding-top:30px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+        <h2>🎓 TEACHER DASHBOARD</h2>
+        <button class="btn btn-secondary btn-sm" onclick="showPage('page-home')">← EXIT</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-sessions')">SESSIONS</button>
+        <button class="tab-btn" onclick="switchTab('tab-answers')">ANSWER KEYS</button>
+        <button class="tab-btn" onclick="switchTab('tab-codes')">LEVEL CODES</button>
+        <button class="tab-btn" onclick="switchTab('tab-oral')">ORAL CODES</button>
+      </div>
+
+      <!-- SESSIONS -->
+      <div id="tab-sessions" class="tab-content active">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3>CLASS SESSIONS</h3>
+            <button class="btn btn-danger btn-sm" onclick="clearAllSessions()">CLEAR ALL</button>
+          </div>
+          <div id="sessions-table-wrap"></div>
+        </div>
+      </div>
+
+      <!-- ANSWER KEYS -->
+      <div id="tab-answers" class="tab-content">
+        <div class="card">
+          <h3 style="margin-bottom:16px;">LEVEL 1 — Sales Vocabulary QCM (Ex.1 & Ex.2)</h3>
+          <div id="dash-answers-l1"></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:16px;">LEVEL 2 — True/False & Comprehension QCM</h3>
+          <div id="dash-answers-l2"></div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:16px;">LEVEL 4 — Matching (Ex.1 & Ex.2)</h3>
+          <div id="dash-answers-l4"></div>
+        </div>
+      </div>
+
+      <!-- LEVEL CODES -->
+      <div id="tab-codes" class="tab-content">
+        <div class="card">
+          <h3 style="margin-bottom:16px;">LEVEL UNLOCK CODES</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Enter these codes in the student interface to unlock the next level once all teams have finished the previous one.</p>
+          <table class="dash-table">
+            <thead><tr><th>LEVEL</th><th>UNLOCK CODE</th><th>FRAGMENTS REVEALED</th></tr></thead>
+            <tbody>
+              <tr><td>Level 2</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK2</span></td><td>Fragment 1: YOU</td></tr>
+              <tr><td>Level 3</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK3</span></td><td>Fragment 2: ARE</td></tr>
+              <tr><td>Level 4</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK4</span></td><td>Fragment 3: THE</td></tr>
+              <tr><td>Level 5</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK5</span></td><td>Fragment 4: BEST</td></tr>
+              <tr><td>Final Code</td><td colspan="2" style="color:var(--green);font-family:var(--font-mono);">YOU ARE THE BEST SALESTEAM</td></tr>
+            </tbody>
+          </table>
+          <div class="alert alert-info" style="margin-top:16px;">
+            <strong>Note:</strong> Level codes unlock the page but students still need to complete their current level exercises first. The system is managed client-side via localStorage.
+          </div>
+        </div>
+      </div>
+
+      <!-- ORAL CODES -->
+      <div id="tab-oral" class="tab-content">
+        <div class="card">
+          <h3 style="margin-bottom:16px;">ORAL EXERCISES — How it works</h3>
+          <p style="font-size:14px;margin-bottom:12px;">
+            1. The game randomly draws a team member (based on CA-IE identifiers entered at login).<br>
+            2. The selected student performs their oral exercise in front of you.<br>
+            3. You give them their score verbally (a number from <strong>1 to 10</strong>).<br>
+            4. The student enters that score directly into the game.<br>
+            5. The game automatically applies the threshold and triggers the next step.
+          </p>
+          <table class="dash-table">
+            <thead><tr><th>LEVEL / EXERCISE</th><th>PASS THRESHOLD</th><th>IF PASS</th><th>IF FAIL</th></tr></thead>
+            <tbody>
+              <tr><td>Level 3 — Ex.1</td><td style="color:var(--green);">≥ 8 / 10</td><td style="color:var(--green);">+50 pts → Fragment + Level 4</td><td style="color:var(--red);">–10 pts → Ex.2</td></tr>
+              <tr><td>Level 3 — Ex.2</td><td style="color:var(--green);">≥ 7 / 10</td><td style="color:var(--green);">+50 pts → Fragment + Level 4</td><td style="color:var(--red);">–10 pts → Fragment quand même</td></tr>
+              <tr><td>Level 5 — Ex.1</td><td style="color:var(--green);">≥ 8 / 10</td><td style="color:var(--green);">+50 pts → Fragment + Fin</td><td style="color:var(--red);">–10 pts → Ex.2</td></tr>
+              <tr><td>Level 5 — Ex.2</td><td style="color:var(--green);">≥ 7 / 10</td><td style="color:var(--green);">+50 pts → Fragment + Fin</td><td style="color:var(--red);">–10 pts → Ex.3</td></tr>
+              <tr><td>Level 5 — Ex.3</td><td style="color:var(--green);">≥ 7 / 10</td><td style="color:var(--green);">+50 pts</td><td style="color:var(--red);">–10 pts</td></tr>
+              <tr><td colspan="4" style="color:var(--muted);font-size:12px;font-style:italic;">Fragment Level 5 unlocked in all cases after Ex.3.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <h3 style="margin-bottom:16px;">LEVEL 3 — Pitch Situations</h3>
+          <div id="dash-l3-situations"></div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <h3 style="margin-bottom:16px;">LEVEL 5 — Board Report Rubric</h3>
+          <div style="font-size:14px;line-height:1.8;">
+            <p><strong style="color:var(--green);">≥8/10:</strong> Clear structure (intro/problem/solution/action plan), professional vocabulary, confident delivery, relevant recommendations</p>
+            <p><strong style="color:var(--yellow);">6–7/10:</strong> Acceptable structure, some hesitation, partial vocabulary use</p>
+            <p><strong style="color:var(--red);">≤5/10:</strong> Incomplete or unclear, poor vocabulary, unprepared delivery</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// GAME DATA
+// ══════════════════════════════════════════
+
+const PROF_CODE = '0504';
+const FINAL_CODE = 'YOU ARE THE BEST SALESTEAM';
+const FRAGMENTS = ['YOU', 'ARE', 'THE', 'BEST', 'SALESTEAM'];
+const LEVEL_UNLOCK_CODES = { 2:'UNLOCK2', 3:'UNLOCK3', 4:'UNLOCK4', 5:'UNLOCK5' };
+
+// ── Oral thresholds ──
+const ORAL_THRESHOLDS = { L3E1:8, L3E2:7, L5E1:8, L5E2:7, L5E3:7 };
+
+// ── Level 1 QCM data ──
+const L1_EX1_DATA = [
+  { q:'What does "cold calling" mean?', opts:['Calling a client after a meeting','Calling a prospect with no prior contact','Calling a client to complain','Calling a supplier for a discount'], ans:1 },
+  { q:'A "value proposition" is:', opts:['The price of a product','A unique benefit offered to the customer','A legal contract','A financial forecast'], ans:1 },
+  { q:'What is a "lead" in sales?', opts:['A discount code','A potential customer','A signed contract','A sales report'], ans:1 },
+  { q:'CRM stands for:', opts:['Customer Revenue Management','Commercial Relationship Model','Customer Relationship Management','Corporate Resource Marketing'], ans:2 },
+  { q:'What is "upselling"?', opts:['Selling to a new market','Encouraging a customer to buy a cheaper product','Persuading a customer to buy a more expensive product or upgrade','Offering a refund'], ans:2 },
+  { q:'"Churn rate" refers to:', opts:['The speed of a sales call','The percentage of customers who stop using a service','The number of new clients per month','The company profit margin'], ans:1 },
+  { q:'A "prospect" is:', opts:['A current loyal client','A potential client not yet converted','An investor','A product feature'], ans:1 },
+  { q:'What does B2B mean?', opts:['Business to Buyer','Brand to Brand','Business to Business','Budget to Balance'], ans:2 },
+  { q:'"Pipeline" in sales refers to:', opts:['The IT infrastructure','The stages a deal goes through before closing','The supply chain','A type of contract'], ans:1 },
+  { q:'What is a "pitch deck"?', opts:['A stack of business cards','A presentation used to sell a product or idea','A financial audit report','A price list'], ans:1 },
+  { q:'To "convert" a lead means:', opts:['To reject the deal','To turn a prospect into a paying customer','To offer a discount','To send a follow-up email'], ans:1 },
+  { q:'"Quota" in a sales context is:', opts:['A legal limit on sales','A target number or value that a salesperson must achieve','A type of contract','A client complaint'], ans:1 },
+];
+
+const L1_EX2_DATA = [
+  { q:'What does "cross-selling" mean?', opts:['Selling internationally','Selling a complementary product to an existing customer','Refusing a sale','Selling at a discount'], ans:1 },
+  { q:'An "SDR" (Sales Development Representative) mainly:', opts:['Closes deals','Manages accounts','Qualifies leads and books appointments','Handles customer support'], ans:2 },
+  { q:'"Objection handling" in sales means:', opts:['Refusing client demands','Addressing concerns or resistance from a prospect','Writing a complaint letter','Negotiating a salary'], ans:1 },
+  { q:'What is a "KPI" in a commercial context?', opts:['Key Product Information','Key Performance Indicator','Knowledge Process Integration','Key Partner Invoice'], ans:1 },
+  { q:'A "sales funnel" describes:', opts:['A company hierarchy','The stages from awareness to purchase','A pricing strategy','A communication tool'], ans:1 },
+  { q:'"BATNA" stands for:', opts:['Best Alternative To a Negotiated Agreement','Business Action Team Negotiation Analysis','Budget Analysis Total Net Asset','Brand Awareness Target Number Allocation'], ans:0 },
+  { q:'What does "onboarding" mean for a new client?', opts:['Ending the client relationship','The process of integrating and training a new client','Sending an invoice','Escalating a complaint'], ans:1 },
+  { q:'A "follow-up" in sales is:', opts:['A new product launch','A contact made after an initial meeting to maintain engagement','A legal action','A refund request'], ans:1 },
+  { q:'"Margin" refers to:', opts:['The size of the market','The difference between selling price and cost','The client satisfaction score','The number of sales calls per day'], ans:1 },
+  { q:'What is "account management"?', opts:['Managing company finances','Maintaining and developing relationships with existing clients','Opening a new bank account','Tracking competitor activity'], ans:1 },
+  { q:'A "win-win" negotiation means:', opts:['One party gains, one loses','Both parties are satisfied with the outcome','The deal is cancelled','The client pays less than expected'], ans:1 },
+  { q:'"Market share" is:', opts:['The amount spent on marketing','The percentage of total market sales held by a company','The number of competitors','The price of a product on the market'], ans:1 },
+];
+
+// ── Level 2 T/F data ──
+const L2_TF_DATA = [
+  { s:'DealForce has been operating for more than five years.', ans:false },
+  { s:'DealForce targets large multinational corporations.', ans:false },
+  { s:'DealForce positions itself as a low-cost CRM option.', ans:true },
+  { s:'Customer acquisition costs have decreased recently.', ans:false },
+  { s:'The conversion rate from free trial to paid subscription is 12%.', ans:true },
+  { s:'The average sales cycle has shortened to 18 days.', ans:false },
+  { s:'The marketing team thinks the product messaging is well-aligned.', ans:false },
+  { s:'DealForce\'s automation features are considered a key differentiator.', ans:true },
+  { s:'The sales director recommends auditing the pitch deck.', ans:true },
+  { s:'The board expects a revised plan within 60 days.', ans:false },
+];
+
+// ── Level 2 QCM data ──
+const L2_QCM_DATA = [
+  { q:'What type of companies does DealForce primarily target?', opts:['Large multinationals','SMEs','Government agencies','Retail chains'], ans:1 },
+  { q:'By how much have customer acquisition costs risen?', opts:['12%','18%','34%','50%'], ans:2 },
+  { q:'What has happened to the average sales cycle?', opts:['It has shortened','It has stayed the same','It has lengthened to 31 days','It has been removed'], ans:2 },
+  { q:'What does the marketing team identify as the main problem?', opts:['Poor product quality','Mismatch between value proposition and messaging','Lack of sales staff','High pricing'], ans:1 },
+  { q:'Which feature are many prospects unaware of?', opts:['Pricing tools','Customer support chat','Automation features','Mobile app'], ans:2 },
+  { q:'What does the sales director recommend first?', opts:['Hiring new SDRs','Lowering prices','Auditing the pitch deck','Expanding to new markets'], ans:2 },
+  { q:'What does SDR stand for in the text?', opts:['Sales Data Report','Sales Director Representative','Sales Development Representative','Strategic Deal Runner'], ans:2 },
+  { q:'What is the deadline for submitting the revised commercial plan?', opts:['15 days','30 days','60 days','90 days'], ans:1 },
+];
+
+// ── Level 3 Pitch situations ──
+const L3_SITUATIONS = [
+  'You are a junior SDR at DealForce. Present the product to a new prospect (SME in logistics). Highlight the value proposition and handle at least one objection.',
+  'You are an account manager. A client is considering cancelling their subscription after 3 months. Try to retain them by addressing their concerns professionally.',
+  'You are presenting DealForce\'s automation features to a sceptical IT manager. Convince them the integration is easy and the ROI is clear.',
+  'You are in a discovery call with a new lead. Ask qualifying questions to understand their needs, budget, and decision timeline.',
+  'You are negotiating the renewal of a contract with an existing client who wants a 20% discount. Try to close the renewal at the original price or with a minimal concession.',
+];
+
+// ── Level 4 Matching data (Ex.1) ──
+const L4_EX1_PAIRS = [
+  { term:'Cold calling', def:'Contacting a prospect by phone without any prior relationship' },
+  { term:'Pipeline', def:'The set of deals at various stages of the sales process' },
+  { term:'Churn rate', def:'The percentage of customers who stop using a service in a period' },
+  { term:'Upselling', def:'Encouraging a customer to purchase a more expensive version of a product' },
+  { term:'Lead qualification', def:'The process of assessing whether a prospect is worth pursuing' },
+  { term:'Value proposition', def:'A statement explaining how your product solves a customer\'s problem' },
+  { term:'Conversion rate', def:'The percentage of prospects who become paying customers' },
+  { term:'Follow-up', def:'A contact made after an initial interaction to maintain engagement' },
+  { term:'BATNA', def:'The best course of action if a negotiation fails to reach an agreement' },
+  { term:'Onboarding', def:'The process of integrating and training a new client to use a product' },
+];
+
+// ── Level 4 Matching data (Ex.2) ──
+const L4_EX2_PAIRS = [
+  { term:'Cross-selling', def:'Offering a complementary product to an existing customer' },
+  { term:'Sales funnel', def:'A model showing the stages from first contact to final purchase' },
+  { term:'Account management', def:'Maintaining and developing long-term relationships with existing clients' },
+  { term:'Market share', def:'The percentage of total market sales held by one company' },
+  { term:'Objection handling', def:'Techniques for addressing concerns raised by a prospect' },
+  { term:'KPI', def:'A measurable value used to evaluate the success of commercial activities' },
+  { term:'Pitch deck', def:'A short presentation used to sell an idea or product to investors or clients' },
+  { term:'Discovery call', def:'An initial call to understand the prospect\'s needs and challenges' },
+  { term:'Win-win negotiation', def:'A negotiation outcome where both parties feel satisfied' },
+  { term:'CAC', def:'The total cost spent on acquiring one new paying customer' },
+];
+
+// ── Hints ──
+const HINTS = {
+  l1: 'Remember: in sales English, terminology often comes from American business culture. Think about what salespeople do every day: they find leads, qualify them, pitch, handle objections, and close deals.',
+  l2: 'Re-read the numbers carefully — the text gives specific percentages and timelines. Pay attention to words like "declined", "lengthened", "risen".',
+  l3: 'Structure your pitch: 1) Introduce yourself and DealForce, 2) Identify the prospect\'s pain point, 3) Present your solution, 4) Handle objections, 5) Propose a next step.',
+  l4: 'Focus on the definitions as complete descriptions of actions or states. Most commercial terms describe a specific action in the sales process.',
+  l5: 'A good oral report: state the problem clearly, give context (client, date, value), explain what went wrong, propose concrete solutions. Stay professional, use formal register.',
+};
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+
+let state = {
+  team: '',
+  members: [],
+  score: 0,
+  currentLevel: 1,
+  unlockedLevels: [1],
+  completedExercises: {},
+  fragmentsCollected: [false,false,false,false,false],
+  l3DrawnMembers: [],
+  l5DrawnMembers: [],
+  l4Ex1Matched: {},
+  l4Ex2Matched: {},
+  l4Ex1TimerRunning: false,
+  l4Ex2TimerRunning: false,
+  l1TimerRunning: false,
+  sessionSaved: false,
+};
+
+let timerIntervals = {};
+
+function saveState() {
+  if (!state.team) return;
+  const sessions = JSON.parse(localStorage.getItem('ndrc_sessions') || '{}');
+  sessions[state.team] = { ...state, savedAt: new Date().toISOString() };
+  localStorage.setItem('ndrc_sessions', JSON.stringify(sessions));
+}
+
+function loadState(team) {
+  const sessions = JSON.parse(localStorage.getItem('ndrc_sessions') || '{}');
+  if (sessions[team]) {
+    state = sessions[team];
+    return true;
+  }
+  return false;
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+
+function defer(fn) { setTimeout(fn, 0); }
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function updateHUD() {
+  document.getElementById('hud').classList.add('visible');
+  document.getElementById('hud-team').textContent = state.team || '—';
+  document.getElementById('hud-level').textContent = `LVL ${state.currentLevel}`;
+  document.getElementById('hud-score').textContent = `${state.score} PTS`;
+  FRAGMENTS.forEach((_,i) => {
+    const dot = document.getElementById(`dot${i}`);
+    if (dot) dot.classList.toggle('active', state.fragmentsCollected[i]);
+  });
+}
+
+function showScorePop(delta) {
+  const el = document.createElement('div');
+  el.className = 'score-pop';
+  el.textContent = delta > 0 ? `+${delta}` : `${delta}`;
+  el.style.color = delta > 0 ? 'var(--green)' : 'var(--red)';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+function addScore(delta) {
+  state.score += delta;
+  showScorePop(delta);
+  updateHUD();
+  saveState();
+}
+
+function alertHtml(msg, type='info') {
+  return `<div class="alert alert-${type}">${msg}</div>`;
+}
+
+function toggleIncident(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════
+
+function studentLogin() {
+  const team = document.getElementById('inp-team').value.trim().toUpperCase();
+  const members = document.getElementById('inp-members').value.trim();
+  const err = document.getElementById('student-err');
+
+  if (!team) { err.textContent = 'Please enter a team name.'; err.style.display='block'; return; }
+  if (!members) { err.textContent = 'Please enter team members (CA-IE format).'; err.style.display='block'; return; }
+
+  const memberList = members.split(',').map(m => m.trim()).filter(Boolean);
+  if (memberList.length < 2) { err.textContent = 'Please enter at least 2 members separated by commas.'; err.style.display='block'; return; }
+
+  // Check CA-IE format
+  const caieReg = /^[A-Z]{2}-[A-Z]{2}$/i;
+  const invalid = memberList.filter(m => !caieReg.test(m));
+  if (invalid.length) { err.textContent = `Invalid format: ${invalid.join(', ')} — use CA-IE format.`; err.style.display='block'; return; }
+
+  err.style.display = 'none';
+  state.team = team;
+  state.members = memberList;
+
+  // Try to resume
+  if (!loadState(team)) {
+    state.team = team;
+    state.members = memberList;
+    saveState();
+  }
+
+  document.getElementById('intro-team').textContent = state.team;
+  updateHUD();
+  showPage('page-intro');
+}
+
+function profLogin() {
+  const code = document.getElementById('inp-prof-code').value.trim();
+  const err = document.getElementById('prof-err');
+  if (code !== PROF_CODE) { err.textContent = 'Incorrect code.'; err.style.display='block'; return; }
+  err.style.display = 'none';
+  renderDashboard();
+  showPage('page-dashboard');
+}
+
+function goToCurrentLevel() {
+  showPage(`page-level${state.currentLevel}`);
+  initLevel(state.currentLevel);
+}
+
+// ══════════════════════════════════════════
+// LEVEL INIT
+// ══════════════════════════════════════════
+
+function initLevel(n) {
+  if (n === 1) initLevel1();
+  if (n === 2) initLevel2();
+  if (n === 3) initLevel3();
+  if (n === 4) initLevel4();
+  if (n === 5) initLevel5();
+}
+
+// ══════════════════════════════════════════
+// LEVEL 1
+// ══════════════════════════════════════════
+
+function initLevel1() {
+  renderQCM('l1-ex1-questions', L1_EX1_DATA);
+  // Timer
+  if (!state.completedExercises['l1e1'] && !state.l1TimerDone) {
+    startTimer('l1-timer', 7*60, () => {
+      state.l1TimerDone = true;
+      addScore(-10);
+      defer(()=>submitL1Ex1(true));
+    });
+  }
+  // Restore state
+  if (state.completedExercises['l1e1']) {
+    document.getElementById('l1-ex1-section').style.display = 'none';
+    if (!state.completedExercises['l1e2']) {
+      document.getElementById('l1-ex2-section').style.display = 'block';
+      renderQCM('l1-ex2-questions', L1_EX2_DATA);
+    }
+  }
+  if (state.completedExercises['l1e2'] || (state.completedExercises['l1e1'] && !state.needsL1Ex2)) {
+    showL1Post();
+  }
+}
+
+function renderQCM(containerId, data) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return;
+  wrap.innerHTML = data.map((q,qi) => `
+    <div class="qcm-question" id="${containerId}-q${qi}">
+      <div class="q-text">${qi+1}. ${q.q}</div>
+      ${q.opts.map((o,oi) => `
+        <label class="qcm-option" id="${containerId}-q${qi}-o${oi}" onclick="selectQCM('${containerId}',${qi},${oi})">
+          <span style="font-family:var(--font-mono);color:var(--muted);margin-right:8px;">${String.fromCharCode(65+oi)}.</span> ${o}
+        </label>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function selectQCM(cid, qi, oi) {
+  const data = cid.includes('l1-ex1') ? L1_EX1_DATA : cid.includes('l1-ex2') ? L1_EX2_DATA : cid.includes('l2-ex2') ? L2_QCM_DATA : [];
+  const maxOpts = data[qi]?.opts.length || 4;
+  for (let i=0;i<maxOpts;i++) {
+    const el = document.getElementById(`${cid}-q${qi}-o${i}`);
+    if (el) el.classList.remove('selected');
+  }
+  const sel = document.getElementById(`${cid}-q${qi}-o${oi}`);
+  if (sel) sel.classList.add('selected');
+}
+
+function gradeQCM(containerId, data) {
+  let correct = 0;
+  const results = data.map((q,qi) => {
+    let chosen = -1;
+    for (let i=0;i<q.opts.length;i++) {
+      const el = document.getElementById(`${containerId}-q${qi}-o${i}`);
+      if (el && el.classList.contains('selected')) chosen = i;
+    }
+    const isCorrect = chosen === q.ans;
+    if (isCorrect) correct++;
+    // Show feedback
+    for (let i=0;i<q.opts.length;i++) {
+      const el = document.getElementById(`${containerId}-q${qi}-o${i}`);
+      if (!el) continue;
+      if (i === q.ans) el.classList.add('correct');
+      else if (i === chosen && chosen !== q.ans) el.classList.add('wrong');
+    }
+    return { chosen, correct: isCorrect };
+  });
+  return { score: correct, total: data.length, results };
+}
+
+function submitL1Ex1(timedOut=false) {
+  if (state.completedExercises['l1e1']) return;
+  clearTimerById('l1-timer');
+  const { score, total } = gradeQCM('l1-ex1-questions', L1_EX1_DATA);
+  const passed = score >= 10;
+  state.completedExercises['l1e1'] = { score, passed };
+
+  const fb = document.getElementById('l1-ex1-feedback');
+  fb.style.display = 'block';
+  const timeMsg = timedOut ? ' <em>(timer ran out)</em>' : '';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ ${score}/${total} — Great job! +50 pts${timeMsg}`, 'success')
+    : alertHtml(`❌ ${score}/${total} — Below threshold (need ≥10). –10 pts. Exercise 2 unlocked.${timeMsg}`, 'danger');
+
+  addScore(passed ? 50 : -10);
+  document.getElementById('l1-ex1-submit').disabled = true;
+
+  if (!passed) {
+    state.needsL1Ex2 = true;
+    saveState();
+    setTimeout(() => {
+      document.getElementById('l1-ex1-section').style.display = 'none';
+      document.getElementById('l1-ex2-section').style.display = 'block';
+      renderQCM('l1-ex2-questions', L1_EX2_DATA);
+    }, 2000);
+  } else {
+    saveState();
+    setTimeout(showL1Post, 2000);
+  }
+}
+
+function submitL1Ex2() {
+  if (state.completedExercises['l1e2']) return;
+  const { score, total } = gradeQCM('l1-ex2-questions', L1_EX2_DATA);
+  const passed = score >= 10;
+  state.completedExercises['l1e2'] = { score, passed };
+
+  const fb = document.getElementById('l1-ex2-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ ${score}/${total} — Well done! +50 pts`, 'success')
+    : alertHtml(`❌ ${score}/${total} — Below threshold. –10 pts.`, 'danger');
+
+  addScore(passed ? 50 : -10);
+  document.getElementById('l1-ex2-submit').disabled = true;
+  saveState();
+  setTimeout(showL1Post, 2000);
+}
+
+function showL1Post() {
+  document.getElementById('l1-ex1-section').style.display = 'none';
+  document.getElementById('l1-ex2-section').style.display = 'none';
+  document.getElementById('l1-hint-section').style.display = 'block';
+  document.getElementById('l1-hint-text').textContent = HINTS.l1;
+  document.getElementById('l1-fragment-section').style.display = 'block';
+  document.getElementById('l1-fragment-word').textContent = FRAGMENTS[0];
+  state.fragmentsCollected[0] = true;
+  updateHUD();
+  document.getElementById('l1-next-section').style.display = 'block';
+  saveState();
+}
+
+// ══════════════════════════════════════════
+// LEVEL 2
+// ══════════════════════════════════════════
+
+function initLevel2() {
+  renderTF();
+  if (state.completedExercises['l2e1']) {
+    document.getElementById('l2-ex1-section').style.display = 'none';
+    if (!state.completedExercises['l2e2']) {
+      document.getElementById('l2-ex2-section').style.display = 'block';
+      renderL2QCM();
+    }
+  }
+  if (state.completedExercises['l2e2'] || (state.completedExercises['l2e1'] && !state.needsL2Ex2)) {
+    showL2Post();
+  }
+}
+
+function renderTF() {
+  const wrap = document.getElementById('l2-ex1-questions');
+  if (!wrap) return;
+  wrap.innerHTML = L2_TF_DATA.map((item,i) => `
+    <div class="tf-row" id="tf-row-${i}">
+      <span class="tf-text">${i+1}. ${item.s}</span>
+      <button class="tf-btn" id="tf-${i}-T" onclick="selectTF(${i},'T')">TRUE</button>
+      <button class="tf-btn" id="tf-${i}-F" onclick="selectTF(${i},'F')">FALSE</button>
+    </div>
+  `).join('');
+}
+
+function selectTF(i, val) {
+  ['T','F'].forEach(v => {
+    const btn = document.getElementById(`tf-${i}-${v}`);
+    if (btn) btn.classList.remove('selected');
+  });
+  const btn = document.getElementById(`tf-${i}-${val}`);
+  if (btn) btn.classList.add('selected');
+}
+
+function submitL2Ex1() {
+  if (state.completedExercises['l2e1']) return;
+  let correct = 0;
+  L2_TF_DATA.forEach((item,i) => {
+    const tBtn = document.getElementById(`tf-${i}-T`);
+    const fBtn = document.getElementById(`tf-${i}-F`);
+    const chosen = tBtn?.classList.contains('selected') ? true : fBtn?.classList.contains('selected') ? false : null;
+    const isCorrect = chosen === item.ans;
+    if (isCorrect) correct++;
+    // feedback
+    const correctVal = item.ans ? 'T' : 'F';
+    const wrongVal = item.ans ? 'F' : 'T';
+    document.getElementById(`tf-${i}-${correctVal}`)?.classList.add('correct');
+    if (chosen !== null && chosen !== item.ans) document.getElementById(`tf-${i}-${wrongVal}`)?.classList.add('wrong');
+  });
+
+  const passed = correct >= 8;
+  state.completedExercises['l2e1'] = { score:correct, passed };
+  const fb = document.getElementById('l2-ex1-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ ${correct}/10 — Excellent! +50 pts`, 'success')
+    : alertHtml(`❌ ${correct}/10 — Need ≥8. –10 pts. Exercise 2 unlocked.`, 'danger');
+  addScore(passed ? 50 : -10);
+  document.getElementById('l2-ex1-submit').disabled = true;
+
+  if (!passed) {
+    state.needsL2Ex2 = true;
+    saveState();
+    setTimeout(() => {
+      document.getElementById('l2-ex1-section').style.display = 'none';
+      document.getElementById('l2-ex2-section').style.display = 'block';
+      renderL2QCM();
+    }, 2000);
+  } else {
+    saveState();
+    setTimeout(showL2Post, 2000);
+  }
+}
+
+function renderL2QCM() {
+  renderQCM('l2-ex2-questions', L2_QCM_DATA);
+}
+
+function submitL2Ex2() {
+  if (state.completedExercises['l2e2']) return;
+  const { score, total } = gradeQCM('l2-ex2-questions', L2_QCM_DATA);
+  const passed = score >= 7;
+  state.completedExercises['l2e2'] = { score, passed };
+  const fb = document.getElementById('l2-ex2-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ ${score}/${total} — +50 pts`, 'success')
+    : alertHtml(`❌ ${score}/${total} — Need ≥7. –10 pts.`, 'danger');
+  addScore(passed ? 50 : -10);
+  document.getElementById('l2-ex2-submit').disabled = true;
+  saveState();
+  setTimeout(showL2Post, 2000);
+}
+
+function showL2Post() {
+  document.getElementById('l2-ex1-section').style.display = 'none';
+  document.getElementById('l2-ex2-section').style.display = 'none';
+  document.getElementById('l2-hint-section').style.display = 'block';
+  document.getElementById('l2-hint-text').textContent = HINTS.l2;
+  document.getElementById('l2-fragment-section').style.display = 'block';
+  document.getElementById('l2-fragment-word').textContent = FRAGMENTS[1];
+  state.fragmentsCollected[1] = true;
+  updateHUD();
+  document.getElementById('l2-next-section').style.display = 'block';
+  saveState();
+}
+
+// ══════════════════════════════════════════
+// LEVEL 3
+// ══════════════════════════════════════════
+
+function initLevel3() {
+  if (!state.l3DrawnMembers) state.l3DrawnMembers = [];
+  if (state.completedExercises['l3e1']) {
+    document.getElementById('l3-ex1-section').style.display = 'none';
+    if (!state.completedExercises['l3e2']) {
+      document.getElementById('l3-ex2-section').style.display = 'block';
+    }
+  }
+  if (state.completedExercises['l3e2'] || state.completedExercises['l3done']) {
+    showL3Post();
+  }
+}
+
+function drawMemberL3(ex) {
+  const available = state.members.filter(m => !state.l3DrawnMembers.includes(m));
+  const pool = available.length > 0 ? available : state.members;
+  const drawn = pool[Math.floor(Math.random() * pool.length)];
+  state.l3DrawnMembers.push(drawn);
+
+  const drawnEl = document.getElementById(`l3-drawn${ex}`);
+  document.getElementById(`l3-member${ex}-name`).textContent = drawn;
+  drawnEl.style.display = 'block';
+
+  // Show situation
+  const sitIdx = Math.floor(Math.random() * L3_SITUATIONS.length);
+  const sitSection = document.getElementById(`l3-ex${ex}-situation`);
+  document.getElementById(`l3-situation${ex}-text`).textContent = L3_SITUATIONS[sitIdx];
+  sitSection.style.display = 'block';
+
+  // Show unlock input
+  document.getElementById(`l3-ex${ex}-unlock`).style.display = 'block';
+  saveState();
+}
+
+function unlockL3Ex1() {
+  const val = parseInt(document.getElementById('l3-code1-inp').value);
+  const err = document.getElementById('l3-ex1-err');
+  if (isNaN(val) || val < 1 || val > 10) {
+    err.textContent = 'Please enter a score between 1 and 10.';
+    err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
+  const passed = val >= ORAL_THRESHOLDS.L3E1;
+  state.completedExercises['l3e1'] = { score: val, passed };
+  addScore(passed ? 50 : -10);
+  const fb = document.getElementById('l3-ex1-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ Score: ${val}/10 — Performance validated! +50 pts`, 'success')
+    : alertHtml(`❌ Score: ${val}/10 — Below threshold (≥8). –10 pts. Exercise 2 unlocked.`, 'danger');
+  saveState();
+  setTimeout(() => {
+    document.getElementById('l3-ex1-section').style.display = 'none';
+    if (passed) { showL3Post(); }
+    else { document.getElementById('l3-ex2-section').style.display = 'block'; }
+  }, 1500);
+}
+
+function unlockL3Ex2() {
+  const val = parseInt(document.getElementById('l3-code2-inp').value);
+  const err = document.getElementById('l3-ex2-err');
+  if (isNaN(val) || val < 1 || val > 10) {
+    err.textContent = 'Please enter a score between 1 and 10.';
+    err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
+  const passed = val >= ORAL_THRESHOLDS.L3E2;
+  state.completedExercises['l3e2'] = { score: val, passed };
+  addScore(passed ? 50 : -10);
+  const fb = document.getElementById('l3-ex2-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ Score: ${val}/10 — +50 pts`, 'success')
+    : alertHtml(`❌ Score: ${val}/10 — Below threshold (≥7). –10 pts. Fragment unlocked anyway.`, 'danger');
+  saveState();
+  setTimeout(() => {
+    document.getElementById('l3-ex2-section').style.display = 'none';
+    showL3Post();
+  }, 1500);
+}
+
+function showL3Post() {
+  document.getElementById('l3-hint-section').style.display = 'block';
+  document.getElementById('l3-hint-text').textContent = HINTS.l3;
+  document.getElementById('l3-fragment-section').style.display = 'block';
+  document.getElementById('l3-fragment-word').textContent = FRAGMENTS[2];
+  state.fragmentsCollected[2] = true;
+  updateHUD();
+  document.getElementById('l3-next-section').style.display = 'block';
+  saveState();
+}
+
+// ══════════════════════════════════════════
+// LEVEL 4
+// ══════════════════════════════════════════
+
+function initLevel4() {
+  if (!state.l4Ex1Matched) state.l4Ex1Matched = {};
+  if (!state.l4Ex2Matched) state.l4Ex2Matched = {};
+  renderMatching('l4-ex1-matching', L4_EX1_PAIRS, 1);
+
+  if (!state.completedExercises['l4e1']) {
+    startTimer('l4-timer1', 6*60, () => {
+      addScore(-10);
+      defer(()=>submitL4Ex1(true));
+    });
+  } else {
+    document.getElementById('l4-ex1-section').style.display = 'none';
+    if (!state.completedExercises['l4e2']) {
+      document.getElementById('l4-ex2-section').style.display = 'block';
+      renderMatching('l4-ex2-matching', L4_EX2_PAIRS, 2);
+      startTimer('l4-timer2', 8*60, () => {
+        addScore(-10);
+        defer(()=>submitL4Ex2(true));
+      });
+    }
+  }
+  if (state.completedExercises['l4e2'] || (state.completedExercises['l4e1'] && !state.needsL4Ex2)) {
+    showL4Post();
+  }
+}
+
+let matchState = { ex: null, selectedTerm: null };
+
+function renderMatching(containerId, pairs, ex) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return;
+
+  // Shuffle defs
+  const defs = [...pairs.map((p,i)=>({def:p.def,idx:i}))].sort(()=>Math.random()-.5);
+  const terms = pairs.map((p,i)=>({term:p.term,idx:i}));
+
+  const matched = ex===1 ? (state.l4Ex1Matched||{}) : (state.l4Ex2Matched||{});
+
+  wrap.innerHTML = `
+    <div class="match-col" id="${containerId}-terms">
+      ${terms.map((t,i)=>`
+        <div class="match-item ${matched[t.idx]!==undefined?'matched':''}" id="${containerId}-term-${t.idx}" onclick="selectMatchTerm('${containerId}',${t.idx},${ex})">
+          ${t.term}
+        </div>
+      `).join('')}
+    </div>
+    <div class="match-col" id="${containerId}-defs">
+      ${defs.map((d,i)=>`
+        <div class="match-item def ${Object.values(matched).includes(d.idx)?'matched':''}" id="${containerId}-def-${d.idx}" onclick="selectMatchDef('${containerId}',${d.idx},${ex})">
+          ${d.def}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectMatchTerm(cid, termIdx, ex) {
+  const matched = ex===1 ? state.l4Ex1Matched : state.l4Ex2Matched;
+  if (matched[termIdx] !== undefined) return;
+  // Deselect previous
+  document.querySelectorAll(`#${cid}-terms .match-item`).forEach(el => el.classList.remove('selected'));
+  matchState = { ex, cid, selectedTerm: termIdx };
+  document.getElementById(`${cid}-term-${termIdx}`)?.classList.add('selected');
+}
+
+function selectMatchDef(cid, defIdx, ex) {
+  if (matchState.selectedTerm === null || matchState.ex !== ex) return;
+  const matched = ex===1 ? state.l4Ex1Matched : state.l4Ex2Matched;
+  // Check if def already matched
+  if (Object.values(matched).includes(defIdx)) return;
+
+  const termIdx = matchState.selectedTerm;
+  const pairs = ex===1 ? L4_EX1_PAIRS : L4_EX2_PAIRS;
+  const isCorrect = pairs[termIdx].def === pairs[defIdx].def;
+
+  if (isCorrect) {
+    matched[termIdx] = defIdx;
+    document.getElementById(`${cid}-term-${termIdx}`)?.classList.remove('selected');
+    document.getElementById(`${cid}-term-${termIdx}`)?.classList.add('matched');
+    document.getElementById(`${cid}-def-${defIdx}`)?.classList.add('matched');
+    matchState.selectedTerm = null;
+
+    const count = Object.keys(matched).length;
+    const countEl = document.getElementById(`l4-ex${ex}-match-count`);
+    const progEl = document.getElementById(`l4-ex${ex}-progress`);
+    if (countEl) countEl.textContent = `${count} / 10`;
+    if (progEl) progEl.style.width = `${count*10}%`;
+
+    if (count === 10) {
+      const submitBtn = document.getElementById(`l4-ex${ex}-submit`);
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'SUBMIT RESULTS'; }
+    }
+    saveState();
+  } else {
+    const termEl = document.getElementById(`${cid}-term-${termIdx}`);
+    const defEl = document.getElementById(`${cid}-def-${defIdx}`);
+    termEl?.classList.add('wrong-match');
+    defEl?.classList.add('wrong-match');
+    setTimeout(()=>{
+      termEl?.classList.remove('wrong-match','selected');
+      defEl?.classList.remove('wrong-match');
+    }, 400);
+    matchState.selectedTerm = null;
+  }
+}
+
+function submitL4Ex1(timedOut=false) {
+  if (state.completedExercises['l4e1']) return;
+  clearTimerById('l4-timer1');
+  const correct = Object.keys(state.l4Ex1Matched||{}).length;
+  const passed = correct >= 8;
+  state.completedExercises['l4e1'] = { score:correct, passed };
+  const fb = document.getElementById('l4-ex1-feedback');
+  fb.style.display = 'block';
+  const timeMsg = timedOut ? ' (timer ran out)' : '';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ ${correct}/10 matched — +50 pts${timeMsg}`, 'success')
+    : alertHtml(`❌ ${correct}/10 matched — Need ≥8. –10 pts. Round 2 unlocked.${timeMsg}`, 'danger');
+  addScore(passed ? 50 : -10);
+  document.getElementById('l4-ex1-submit').disabled = true;
+  if (!passed) {
+    state.needsL4Ex2 = true;
+    saveState();
+    setTimeout(()=>{
+      document.getElementById('l4-ex1-section').style.display = 'none';
+      document.getElementById('l4-ex2-section').style.display = 'block';
+      renderMatching('l4-ex2-matching', L4_EX2_PAIRS, 2);
+      startTimer('l4-timer2', 8*60, ()=>{ addScore(-10); defer(()=>submitL4Ex2(true)); });
+    }, 2000);
+  } else {
+    saveState();
+    setTimeout(showL4Post, 2000);
+  }
+}
+
+function submitL4Ex2(timedOut=false) {
+  if (state.completedExercises['l4e2']) return;
+  clearTimerById('l4-timer2');
+  const correct = Object.keys(state.l4Ex2Matched||{}).length;
+  const passed = correct >= 8;
+  state.completedExercises['l4e2'] = { score:correct, passed };
+  const fb = document.getElementById('l4-ex2-feedback');
+  fb.style.display = 'block';
+  const timeMsg = timedOut ? ' (timer ran out)' : '';
+  fb.innerHTML = passed
+    ? alertHtml(`✅ ${correct}/10 matched — +50 pts${timeMsg}`, 'success')
+    : alertHtml(`❌ ${correct}/10 matched — –10 pts.${timeMsg}`, 'danger');
+  addScore(passed ? 50 : -10);
+  document.getElementById('l4-ex2-submit').disabled = true;
+  saveState();
+  setTimeout(showL4Post, 2000);
+}
+
+function showL4Post() {
+  document.getElementById('l4-ex1-section').style.display = 'none';
+  document.getElementById('l4-ex2-section').style.display = 'none';
+  document.getElementById('l4-hint-section').style.display = 'block';
+  document.getElementById('l4-hint-text').textContent = HINTS.l4;
+  document.getElementById('l4-fragment-section').style.display = 'block';
+  document.getElementById('l4-fragment-word').textContent = FRAGMENTS[3];
+  state.fragmentsCollected[3] = true;
+  updateHUD();
+  document.getElementById('l4-next-section').style.display = 'block';
+  saveState();
+}
+
+// ══════════════════════════════════════════
+// LEVEL 5
+// ══════════════════════════════════════════
+
+function initLevel5() {
+  if (!state.l5DrawnMembers) state.l5DrawnMembers = [];
+  // Restore visible state
+  const l5ex = state.l5CurrentEx || 1;
+  for (let i=1;i<=3;i++) {
+    document.getElementById(`l5-ex${i}-section`).style.display = i===l5ex ? 'block' : 'none';
+  }
+  if (state.fragmentsCollected[4]) showL5Post();
+}
+
+function drawMemberL5(ex) {
+  const available = state.members.filter(m => !state.l5DrawnMembers.includes(m));
+  const pool = available.length > 0 ? available : state.members;
+  const drawn = pool[Math.floor(Math.random() * pool.length)];
+  state.l5DrawnMembers.push(drawn);
+  document.getElementById(`l5-member${ex}-name`).textContent = drawn;
+  document.getElementById(`l5-drawn${ex}`).style.display = 'block';
+  document.getElementById(`l5-ex${ex}-unlock`).style.display = 'block';
+  saveState();
+}
+
+function unlockL5(ex) {
+  const thresholds = { 1: ORAL_THRESHOLDS.L5E1, 2: ORAL_THRESHOLDS.L5E2, 3: ORAL_THRESHOLDS.L5E3 };
+  const val = parseInt(document.getElementById(`l5-code${ex}-inp`).value);
+  const err = document.getElementById(`l5-ex${ex}-err`);
+  if (isNaN(val) || val < 1 || val > 10) {
+    err.textContent = 'Please enter a score between 1 and 10.';
+    err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
+  const passed = val >= thresholds[ex];
+  state.completedExercises[`l5e${ex}`] = { score: val, passed };
+  addScore(passed ? 50 : -10);
+  const fb = document.getElementById(`l5-ex${ex}-feedback`);
+  fb.style.display = 'block';
+
+  if (passed) {
+    fb.innerHTML = alertHtml(`✅ Score: ${val}/10 — Performance validated! +50 pts`, 'success');
+    saveState();
+    setTimeout(() => {
+      document.getElementById(`l5-ex${ex}-section`).style.display = 'none';
+      showL5Post();
+    }, 1500);
+  } else {
+    if (ex < 3) {
+      fb.innerHTML = alertHtml(`❌ Score: ${val}/10 — Below threshold (≥${thresholds[ex]}). –10 pts. Exercise ${ex+1} unlocked.`, 'danger');
+      state.l5CurrentEx = ex + 1;
+      saveState();
+      setTimeout(() => {
+        document.getElementById(`l5-ex${ex}-section`).style.display = 'none';
+        document.getElementById(`l5-ex${ex+1}-section`).style.display = 'block';
+      }, 1500);
+    } else {
+      fb.innerHTML = alertHtml(`❌ Score: ${val}/10 — –10 pts. Fragment unlocked anyway.`, 'danger');
+      saveState();
+      setTimeout(showL5Post, 1500);
+    }
+  }
+}
+
+function showL5Post() {
+  for (let i=1;i<=3;i++) document.getElementById(`l5-ex${i}-section`).style.display = 'none';
+  document.getElementById('l5-fragment-section').style.display = 'block';
+  document.getElementById('l5-fragment-word').textContent = FRAGMENTS[4];
+  state.fragmentsCollected[4] = true;
+  updateHUD();
+  document.getElementById('l5-next-section').style.display = 'block';
+  saveState();
+}
+
+// ══════════════════════════════════════════
+// FINAL CODE
+// ══════════════════════════════════════════
+
+function submitFinalCode() {
+  const inp = document.getElementById('final-code-inp').value.trim().toUpperCase();
+  const fb = document.getElementById('final-feedback');
+  if (inp === FINAL_CODE.toUpperCase()) {
+    fb.innerHTML = '';
+    document.getElementById('victory-section').style.display = 'block';
+    document.getElementById('victory-code-display').textContent = FINAL_CODE;
+    document.getElementById('victory-score').textContent = `FINAL SCORE: ${state.score} PTS`;
+    state.missionComplete = true;
+    saveState();
+  } else {
+    fb.innerHTML = alertHtml('❌ Incorrect code. Check your fragments and try again.', 'danger');
+  }
+}
+
+// ══════════════════════════════════════════
+// TIMERS
+// ══════════════════════════════════════════
+
+function startTimer(elId, seconds, onEnd) {
+  clearTimerById(elId);
+  let remaining = seconds;
+  updateTimerDisplay(elId, remaining);
+
+  timerIntervals[elId] = setInterval(() => {
+    remaining--;
+    updateTimerDisplay(elId, remaining);
+    if (remaining <= 30) document.getElementById(elId)?.classList.add('danger');
+    if (remaining <= 0) {
+      clearTimerById(elId);
+      if (onEnd) onEnd();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(elId, s) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const sec = Math.max(0,s%60).toString().padStart(2,'0');
+  el.textContent = `${m}:${sec}`;
+}
+
+function clearTimerById(elId) {
+  if (timerIntervals[elId]) {
+    clearInterval(timerIntervals[elId]);
+    delete timerIntervals[elId];
+  }
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function renderDashboard() {
+  renderSessionsTable();
+  renderAnswerKeys();
+  renderL3Situations();
+}
+
+function renderSessionsTable() {
+  const sessions = JSON.parse(localStorage.getItem('ndrc_sessions') || '{}');
+  const wrap = document.getElementById('sessions-table-wrap');
+  const keys = Object.keys(sessions);
+  if (!keys.length) { wrap.innerHTML = '<p style="color:var(--muted);">No sessions yet.</p>'; return; }
+  wrap.innerHTML = `<table class="dash-table">
+    <thead><tr><th>TEAM</th><th>MEMBERS</th><th>SCORE</th><th>LEVEL</th><th>FRAGMENTS</th><th>COMPLETE</th><th>SAVED</th></tr></thead>
+    <tbody>${keys.map(k => {
+      const s = sessions[k];
+      const frags = (s.fragmentsCollected||[]).filter(Boolean).length;
+      return `<tr>
+        <td style="font-family:var(--font-mono);color:var(--accent);">${k}</td>
+        <td style="font-size:12px;">${(s.members||[]).join(', ')}</td>
+        <td style="color:var(--yellow);font-family:var(--font-mono);">${s.score||0}</td>
+        <td>${s.currentLevel||1}</td>
+        <td>${frags}/5</td>
+        <td>${s.missionComplete?'<span style="color:var(--green);">✅ YES</span>':'<span style="color:var(--muted);">No</span>'}</td>
+        <td style="font-size:11px;color:var(--muted);">${s.savedAt?new Date(s.savedAt).toLocaleString('fr-FR'):'-'}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function clearAllSessions() {
+  if (confirm('Clear all student sessions? This cannot be undone.')) {
+    localStorage.removeItem('ndrc_sessions');
+    renderSessionsTable();
+  }
+}
+
+function renderAnswerKeys() {
+  // L1
+  let html = '<div style="font-size:13px;">';
+  html += '<strong style="color:var(--lvl1);">Exercise 1</strong><ol style="margin:8px 0 16px 20px;">';
+  L1_EX1_DATA.forEach((q,i) => { html += `<li style="margin-bottom:4px;">${q.q}<br><span style="color:var(--green);">${q.opts[q.ans]}</span></li>`; });
+  html += '</ol><strong style="color:var(--lvl1);">Exercise 2</strong><ol style="margin:8px 0 0 20px;">';
+  L1_EX2_DATA.forEach((q,i) => { html += `<li style="margin-bottom:4px;">${q.q}<br><span style="color:var(--green);">${q.opts[q.ans]}</span></li>`; });
+  html += '</ol></div>';
+  document.getElementById('dash-answers-l1').innerHTML = html;
+
+  // L2
+  let h2 = '<div style="font-size:13px;"><strong style="color:var(--lvl2);">True/False</strong><ol style="margin:8px 0 16px 20px;">';
+  L2_TF_DATA.forEach((q,i) => { h2 += `<li style="margin-bottom:4px;">${q.s}<br><span style="color:var(--green);">${q.ans?'TRUE':'FALSE'}</span></li>`; });
+  h2 += '</ol><strong style="color:var(--lvl2);">QCM</strong><ol style="margin:8px 0 0 20px;">';
+  L2_QCM_DATA.forEach((q,i) => { h2 += `<li style="margin-bottom:4px;">${q.q}<br><span style="color:var(--green);">${q.opts[q.ans]}</span></li>`; });
+  h2 += '</ol></div>';
+  document.getElementById('dash-answers-l2').innerHTML = h2;
+
+  // L4
+  let h4 = '<div style="font-size:13px;"><strong style="color:var(--lvl4);">Exercise 1 — Matching</strong><ul style="margin:8px 0 16px 20px;">';
+  L4_EX1_PAIRS.forEach(p => { h4 += `<li style="margin-bottom:4px;"><span style="color:var(--accent);">${p.term}</span> → ${p.def}</li>`; });
+  h4 += '</ul><strong style="color:var(--lvl4);">Exercise 2 — Matching</strong><ul style="margin:8px 0 0 20px;">';
+  L4_EX2_PAIRS.forEach(p => { h4 += `<li style="margin-bottom:4px;"><span style="color:var(--accent);">${p.term}</span> → ${p.def}</li>`; });
+  h4 += '</ul></div>';
+  document.getElementById('dash-answers-l4').innerHTML = h4;
+}
+
+function renderL3Situations() {
+  const sitWrap = document.getElementById('dash-l3-situations');
+  if (!sitWrap) return;
+  sitWrap.innerHTML = L3_SITUATIONS.map((s,i) => `
+    <div style="margin-bottom:12px;padding:12px;background:var(--bg3);border-radius:4px;border-left:3px solid var(--lvl3);">
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:4px;">SITUATION ${i+1}</div>
+      <p style="font-size:13px;">${s}</p>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+// PDF REPORT (basic)
+// ══════════════════════════════════════════
+
+function generatePDFReport() {
+  const w = window.open('','_blank');
+  const exList = Object.entries(state.completedExercises).map(([k,v]) =>
+    `<tr><td>${k.toUpperCase()}</td><td>${v.passed?'✅ Pass':'❌ Fail'}</td><td>${v.score!==undefined?v.score:'—'}</td></tr>`
+  ).join('');
+  w.document.write(`<!DOCTYPE html><html><head><title>Report — ${state.team}</title>
+  <style>body{font-family:Arial;padding:30px;} table{border-collapse:collapse;width:100%;} td,th{border:1px solid #ccc;padding:8px;}</style>
+  </head><body>
+  <h1>Escape Game — DealForce Startup</h1>
+  <h2>Team: ${state.team}</h2>
+  <p>Members: ${state.members.join(', ')}</p>
+  <p>Final Score: <strong>${state.score} pts</strong></p>
+  <p>Fragments collected: ${state.fragmentsCollected.filter(Boolean).length}/5</p>
+  <h3>Exercise Results</h3>
+  <table><thead><tr><th>Exercise</th><th>Result</th><th>Score</th></tr></thead><tbody>${exList}</tbody></table>
+  <p style="margin-top:20px;font-size:12px;color:#999;">Generated: ${new Date().toLocaleString('fr-FR')} — Créé par C. Iemfre</p>
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 300);
+}
+
+// ══════════════════════════════════════════
+// KEYBOARD shortcuts for level unlock
+// (Teacher enters unlock code on student interface)
+// ══════════════════════════════════════════
+
+// Level unlock via secret input — handled in dashboard only
+// Students can also be given codes at the start of each level
+// to auto-navigate (future extension)
+
+// Init: check if there's a saved state to restore
+window.addEventListener('load', () => {
+  // Nothing auto-loaded — students log in fresh each session
+  // State persists per team name in localStorage
+});
+</script>
+</body>
+</html>
