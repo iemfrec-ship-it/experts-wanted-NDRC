@@ -309,6 +309,9 @@ input:focus, textarea:focus { border-color: var(--accent); }
 .match-item.selected { border-color: var(--yellow); background: rgba(255,215,64,.1); }
 .match-item.matched { border-color: var(--green); background: rgba(0,230,118,.1); cursor: default; }
 .match-item.wrong-match { border-color: var(--red); animation: shake .3s; }
+.match-item.pending { border-color: var(--yellow); background: rgba(255,215,64,.12); }
+.match-item.wrong-match-final { border-color: var(--red) !important; background: rgba(255,23,68,.12) !important; }
+.match-item.correct-reveal { border-color: var(--green) !important; background: rgba(0,230,118,.15) !important; }
 .match-item.def { font-size: 12px; color: var(--muted); }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
 
@@ -531,6 +534,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
     <div class="hud-dot" id="dot2"></div>
     <div class="hud-dot" id="dot3"></div>
     <div class="hud-dot" id="dot4"></div>
+    <div class="hud-dot" id="dot5"></div>
   </div>
   <span id="hud-score">0 pts</span>
 </div>
@@ -553,6 +557,10 @@ input:focus, textarea:focus { border-color: var(--accent); }
         <!-- Student login -->
         <div class="card card-accent">
           <h3 style="color:var(--accent);margin-bottom:16px;">👥 STUDENT ACCESS</h3>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">ACCESS CODE</label>
+            <input type="text" id="inp-student-code" placeholder="Enter access code" style="font-family:var(--font-mono);text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"/>
+          </div>
           <div style="margin-bottom:12px;">
             <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">TEAM NAME</label>
             <input type="text" id="inp-team" placeholder="e.g. DEAL HUNTERS" />
@@ -595,9 +603,12 @@ input:focus, textarea:focus { border-color: var(--accent); }
           </div>
           <div id="prof-err" class="alert alert-danger" style="display:none;"></div>
           <button class="btn btn-secondary" style="width:100%;margin-top:6px;" onclick="profLogin()">OPEN DASHBOARD ▶</button>
-          <hr class="divider">
-          <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="showPage('page-rgpd')">RGPD / Privacy</button>
         </div>
+      </div>
+
+      <!-- RGPD below both cards -->
+      <div style="max-width:700px;margin:0 auto 20px;">
+        <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="showPage('page-rgpd')">🔒 RGPD / Privacy Policy</button>
       </div>
     </div>
     <footer>Créé par C. Iemfre</footer>
@@ -640,7 +651,6 @@ input:focus, textarea:focus { border-color: var(--accent); }
         <div class="rule-item"><span class="rule-icon">⚡</span><span>Some exercises have a timer. Speed matters — don't run out of time.</span></div>
         <div class="rule-item"><span class="rule-icon">✅</span><span>Pass an exercise: <strong style="color:var(--green);">+50 pts</strong>. Fail: <strong style="color:var(--red);">–10 pts</strong>. Timer overrun: extra <strong style="color:var(--red);">–10 pts</strong>.</span></div>
         <div class="rule-item"><span class="rule-icon">📝</span><span>When a code fragment appears — <strong>write it down on paper immediately</strong>. It will not be shown again.</span></div>
-        <div class="rule-item"><span class="rule-icon">🔒</span><span>Your teacher unlocks each level. You cannot skip ahead.</span></div>
         <div class="rule-item"><span class="rule-icon">🤫</span><span>Do not share your fragments with other teams.</span></div>
       </div>
 
@@ -967,37 +977,38 @@ input:focus, textarea:focus { border-color: var(--accent); }
         <div class="rule-item"><span class="rule-icon">3️⃣</span><span>Ex.3: New member | Pass ≥7 → +50pts | Fail → –10pts — fragment unlocked <strong>in all cases</strong></span></div>
       </div>
 
-      <!-- Incident files -->
+      <!-- Incident files — shown one at a time based on exercise progress -->
       <div class="card">
-        <h3 style="margin-bottom:12px;">📁 INCIDENT FILES</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
-          <div class="card" style="background:var(--bg3);cursor:pointer;" onclick="toggleIncident('inc1')">
-            <div style="font-family:var(--font-mono);font-size:11px;color:var(--red);margin-bottom:6px;">FILE #001</div>
-            <strong style="font-size:13px;">Lost Account — RetailPro</strong>
-            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Client churned after 6 months</p>
-          </div>
-          <div class="card" style="background:var(--bg3);cursor:pointer;" onclick="toggleIncident('inc2')">
-            <div style="font-family:var(--font-mono);font-size:11px;color:var(--yellow);margin-bottom:6px;">FILE #002</div>
-            <strong style="font-size:13px;">Stalled Deal — TechNord</strong>
-            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Negotiation frozen at proposal stage</p>
-          </div>
-          <div class="card" style="background:var(--bg3);cursor:pointer;" onclick="toggleIncident('inc3')">
-            <div style="font-family:var(--font-mono);font-size:11px;color:var(--purple);margin-bottom:6px;">FILE #003</div>
-            <strong style="font-size:13px;">Complaint — EcoShop</strong>
-            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Onboarding failed, refund requested</p>
-          </div>
+        <h3 style="margin-bottom:12px;">📁 INCIDENT FILE</h3>
+        <div class="alert alert-warning" style="margin-bottom:12px;">
+          ⚠ <strong>Do not read the file aloud.</strong> Use your own words. Summarise the situation, explain what went wrong, and suggest solutions you could offer as a consultant.
         </div>
-        <div id="inc1" style="display:none;margin-top:12px;" class="briefing-box">
-          <strong style="color:var(--red);">FILE #001 — RetailPro Account Lost</strong><br><br>
-          RetailPro signed a 12-month contract in January. After a poor onboarding experience and several unanswered support tickets, they cancelled in July. Their main complaints: the CRM was too complex, the SDR assigned to them changed twice, and they never received the promised training sessions. Annual contract value: €18,000.
+
+        <!-- File 1 — always visible from start -->
+        <div id="inc1" class="briefing-box">
+          <strong style="color:var(--red);">FILE #001 — RetailPro — Lost Client</strong><br><br>
+          RetailPro signed a 12-month contract in January. After a poor start and several unanswered support requests, they cancelled in July.<br><br>
+          <strong>Their complaints:</strong> the software was too difficult to use, the person looking after their account changed twice without warning, and the training sessions they were promised never happened.<br><br>
+          <strong>Contract value:</strong> €18,000/year.<br>
+          <strong>Current status:</strong> Client lost. No exit interview was done.
         </div>
+
+        <!-- File 2 — shown only when ex2 is reached -->
         <div id="inc2" style="display:none;margin-top:12px;" class="briefing-box">
-          <strong style="color:var(--yellow);">FILE #002 — TechNord Stalled Deal</strong><br><br>
-          TechNord is a 150-person IT firm in Lille. After two demos and a proposal sent in September, all contact has gone silent. The last email from their procurement manager mentioned "budget review." The deal was valued at €42,000/year. The sales rep hasn't followed up in 6 weeks.
+          <strong style="color:var(--yellow);">FILE #002 — TechNord — Deal on Hold</strong><br><br>
+          TechNord is a company of 150 people based in Lille. After two product demos and a quote sent in September, they stopped responding.<br><br>
+          <strong>Last contact:</strong> an email saying they needed to "review their budget." No one has followed up in 6 weeks.<br><br>
+          <strong>Deal value:</strong> €42,000/year.<br>
+          <strong>Current status:</strong> No response. The quote has not been rejected.
         </div>
+
+        <!-- File 3 — shown only when ex3 is reached -->
         <div id="inc3" style="display:none;margin-top:12px;" class="briefing-box">
-          <strong style="color:var(--purple);">FILE #003 — EcoShop Complaint</strong><br><br>
-          EcoShop, a sustainable retail client, purchased a 6-month starter pack. They claim the onboarding session was too short, the data migration failed, and the platform was not adapted to their industry. They are requesting a full refund of €6,500 and threatening to post a negative review on G2.
+          <strong style="color:var(--purple);">FILE #003 — EcoShop — Complaint</strong><br><br>
+          EcoShop is a small eco-friendly shop that bought a 6-month starter package. They are unhappy with the service they received.<br><br>
+          <strong>Their complaints:</strong> the setup session was too short, their data was not moved over correctly, and the platform doesn't suit their type of business.<br><br>
+          <strong>They are asking for:</strong> a full refund of €6,500 and threatening to leave a bad review online.<br>
+          <strong>Current status:</strong> No response sent yet.
         </div>
       </div>
 
@@ -1074,6 +1085,206 @@ input:focus, textarea:focus { border-color: var(--accent); }
       </div>
 
       <div id="l5-next-section" style="display:none;text-align:center;padding:20px 0;">
+        <button class="btn btn-primary" onclick="goToLevel(6)">PROCEED TO LEVEL 6 ▶</button>
+      </div>
+    </div>
+    <footer>Créé par C. Iemfre</footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LEVEL 6 — The Investor Pitch Stage 🟡
+══════════════════════════════════════════ -->
+<div id="page-level6" class="page">
+  <div class="page-inner scroll-level">
+    <div class="level-header">
+      <div class="level-badge" style="background:rgba(234,179,8,.15);color:#eab308;border:1px solid #eab308;">LEVEL 6 / 6</div>
+      <h2>THE INVESTOR PITCH STAGE</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px;">Oral — Sales argumentation</p>
+    </div>
+    <div class="container">
+
+      <!-- Context -->
+      <div class="card" style="border-color:#eab308;">
+        <h3 style="color:#eab308;margin-bottom:12px;">🎤 FINAL CHALLENGE</h3>
+        <p style="font-size:14px;margin-bottom:12px;">The investor leans forward. <em>"One last test. I don't want slides, I don't want data — I want to see your team sell. Face a real client, pitch a real product, handle a real objection. Be convincing — or walk away."</em></p>
+        <div class="alert alert-warning" style="margin-top:12px;">
+          ⚠ <strong>This is an argumentation exercise.</strong> Simply describing the product is not enough — you must make the client <strong>want to buy it</strong>. Be persuasive, structured, and professional.
+        </div>
+        <div class="rule-item" style="margin-top:12px;"><span class="rule-icon">1️⃣</span><span>Ex.1: Pass ≥8 → +50pts + fragment | Fail → –10pts + Ex.2</span></div>
+        <div class="rule-item"><span class="rule-icon">2️⃣</span><span>Ex.2: New member | Pass ≥7 → +50pts + fragment | Fail → –10pts + Ex.3</span></div>
+        <div class="rule-item"><span class="rule-icon">3️⃣</span><span>Ex.3: New member | Pass ≥7 → +50pts | Fail → –10pts — fragment unlocked <strong>in all cases</strong></span></div>
+      </div>
+
+      <!-- Situation cards always visible -->
+      <div class="card">
+        <h3 style="margin-bottom:12px;">📋 PITCH SITUATIONS</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">The active situation is highlighted when the exercise starts. Click to expand any file.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+          <div class="card" style="background:rgba(234,179,8,.1);border-color:#eab308;">
+            <div style="font-family:var(--font-mono);font-size:11px;color:#eab308;margin-bottom:4px;">SITUATION A — Ex.1</div>
+            <strong style="font-size:13px;">SmartSite Pro</strong>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Construction site management software</p>
+          </div>
+          <div id="l6-card-b" class="card" style="background:var(--bg3);display:none;">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--lvl3);margin-bottom:4px;">SITUATION B — Ex.2</div>
+            <strong style="font-size:13px;">SolarEase</strong>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px;">Solar panel kit for small businesses</p>
+          </div>
+          <div id="l6-card-c" class="card" style="background:var(--bg3);display:none;">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--lvl5);margin-bottom:4px;">SITUATION C — Ex.3</div>
+            <strong style="font-size:13px;">PulseHR</strong>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px;">HR & time management software</p>
+          </div>
+        </div>
+
+        <!-- Situation A — always visible -->
+        <div id="l6-sit-a" class="briefing-box" style="margin-top:12px;">
+          <strong style="color:#eab308;">SITUATION A — SmartSite Pro</strong><br><br>
+          <strong>Company:</strong> NovaBuild Solutions<br>
+          <strong>Product:</strong> SmartSite Pro — construction site management software (SaaS)<br>
+          <strong>Client:</strong> Operations Manager of a mid-sized construction company (50 employees)<br>
+          <strong>Objective:</strong> Convince the client to replace their Excel spreadsheets with SmartSite Pro<br><br>
+          <strong>8 product features to use in your pitch:</strong>
+          <ol style="margin:8px 0 8px 20px;font-size:13px;line-height:2;">
+            <li>Real-time tracking of all ongoing construction sites</li>
+            <li>Team scheduling — accessible from phone or computer</li>
+            <li>Automatic alerts when deadlines or budgets are exceeded</li>
+            <li>Built-in invoicing tool with simple accounting export</li>
+            <li>Secure access portal for subcontractors and clients</li>
+            <li>GDPR-compliant — data hosted in France</li>
+            <li>Compatible with major accounting software (SAP, Sage)</li>
+            <li>7-day customer support + free onboarding training included</li>
+          </ol>
+          <strong style="color:var(--red);">Likely objection:</strong> <em>"We've been using Excel for 10 years — why would we change now?"</em>
+        </div>
+
+        <!-- Situation B -->
+        <div id="l6-sit-b" style="display:none;margin-top:12px;" class="briefing-box">
+          <strong style="color:var(--lvl3);">SITUATION B — SolarEase</strong><br><br>
+          <strong>Company:</strong> SunForce Energy<br>
+          <strong>Product:</strong> SolarEase — solar panel kit for small businesses<br>
+          <strong>Client:</strong> Owner of a small logistics company (warehouse + offices, high electricity bills)<br>
+          <strong>Objective:</strong> Convince the client to install SolarEase panels to cut energy costs and go greener<br><br>
+          <strong>8 product features to use in your pitch:</strong>
+          <ol style="margin:8px 0 8px 20px;font-size:13px;line-height:2;">
+            <li>Fast and easy installation — 2 to 3 days maximum</li>
+            <li>Reduces electricity bills by up to 60%</li>
+            <li>25-year manufacturer guarantee on all panels</li>
+            <li>Remote monitoring via a simple mobile app</li>
+            <li>Eligible for government energy grants and tax benefits</li>
+            <li>No maintenance required — self-cleaning panels</li>
+            <li>Return on investment reached in 4 to 6 years</li>
+            <li>Free on-site energy audit before installation</li>
+          </ol>
+          <strong style="color:var(--red);">Likely objection:</strong> <em>"Solar panels are expensive — I'm not sure I can afford this right now."</em>
+        </div>
+
+        <!-- Situation C -->
+        <div id="l6-sit-c" style="display:none;margin-top:12px;" class="briefing-box">
+          <strong style="color:var(--lvl5);">SITUATION C — PulseHR</strong><br><br>
+          <strong>Company:</strong> FlexWork Digital<br>
+          <strong>Product:</strong> PulseHR — HR and time management software (SaaS)<br>
+          <strong>Client:</strong> HR Manager of a service company (200 employees, many part-time and remote workers)<br>
+          <strong>Objective:</strong> Convince the HR Manager to replace their outdated HR software with PulseHR<br><br>
+          <strong>8 product features to use in your pitch:</strong>
+          <ol style="margin:8px 0 8px 20px;font-size:13px;line-height:2;">
+            <li>Real-time tracking of leave, absences and overtime</li>
+            <li>Automatic payslip generation with legal compliance checks</li>
+            <li>Mobile app for remote workers to log hours and request leave</li>
+            <li>Customisable HR dashboards (turnover, absenteeism, payroll)</li>
+            <li>Automatic social security declarations (DSN)</li>
+            <li>Handles multiple sites and collective agreements</li>
+            <li>Electronic signature for contracts and amendments</li>
+            <li>GDPR-compliant with secure legal document archiving</li>
+          </ol>
+          <strong style="color:var(--red);">Likely objection:</strong> <em>"Migrating our HR data is risky — what if we lose information?"</em>
+        </div>
+      </div>
+
+      <!-- Ex1 -->
+      <div id="l6-ex1-section" class="ex-section">
+        <h3 style="margin-bottom:16px;">EXERCISE 1 — Pitch: SmartSite Pro</h3>
+        <div id="l6-ex1-draw" class="member-draw">
+          <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Press the button to randomly select a team member</p>
+          <button class="btn btn-primary" onclick="drawMemberL6(1)">🎲 DRAW MEMBER</button>
+          <div id="l6-drawn1" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l6-member1-name"></div>
+          </div>
+        </div>
+        <div id="l6-ex1-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l6-code1-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL6(1))">VALIDATE</button>
+          </div>
+          <div id="l6-ex1-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l6-ex1-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <!-- Ex2 -->
+      <div id="l6-ex2-section" class="ex-section" style="display:none;">
+        <h3 style="margin-bottom:16px;">EXERCISE 2 — Pitch: SolarEase</h3>
+        <div id="l6-ex2-draw" class="member-draw">
+          <button class="btn btn-primary" onclick="drawMemberL6(2)">🎲 DRAW MEMBER</button>
+          <div id="l6-drawn2" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l6-member2-name"></div>
+          </div>
+        </div>
+        <div id="l6-ex2-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l6-code2-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL6(2))">VALIDATE</button>
+          </div>
+          <div id="l6-ex2-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l6-ex2-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <!-- Ex3 -->
+      <div id="l6-ex3-section" class="ex-section" style="display:none;">
+        <h3 style="margin-bottom:16px;">EXERCISE 3 — Pitch: PulseHR</h3>
+        <div id="l6-ex3-draw" class="member-draw">
+          <button class="btn btn-primary" onclick="drawMemberL6(3)">🎲 DRAW MEMBER</button>
+          <div id="l6-drawn3" style="display:none;margin-top:16px;">
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);">SELECTED SPEAKER:</div>
+            <div class="drawn-member" id="l6-member3-name"></div>
+          </div>
+        </div>
+        <div id="l6-ex3-unlock" style="display:none;">
+          <hr class="divider">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">The teacher gives you a score from 1 to 10. Enter it below.</p>
+          <div class="unlock-form">
+            <input type="number" id="l6-code3-inp" placeholder="Score (1–10)" min="1" max="10" style="max-width:140px;font-family:var(--font-mono);font-size:18px;text-align:center;">
+            <button class="btn btn-primary btn-sm" onclick="defer(()=>unlockL6(3))">VALIDATE</button>
+          </div>
+          <div id="l6-ex3-err" class="alert alert-danger" style="display:none;margin-top:8px;"></div>
+        </div>
+        <div id="l6-ex3-feedback" style="display:none;margin-top:12px;"></div>
+      </div>
+
+      <!-- Hint -->
+      <div id="l6-hint-section" class="hint-box" style="display:none;">
+        <h4>💡 EVALUATION CRITERIA</h4>
+        <p style="font-size:14px;">Structure your pitch: 1) Hook the client, 2) Present the product clearly, 3) Match features to their specific needs, 4) Handle the objection confidently, 5) Propose a concrete next step (demo, trial, meeting).</p>
+      </div>
+
+      <!-- Fragment -->
+      <div id="l6-fragment-section" style="display:none;">
+        <div class="fragment-reveal">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-family:var(--font-mono);">🔓 FRAGMENT UNLOCKED</div>
+          <div class="fragment-word" id="l6-fragment-word"></div>
+          <div class="fragment-hint">⚠ NOTE IT DOWN — DO NOT SHARE</div>
+        </div>
+      </div>
+
+      <div id="l6-next-section" style="display:none;text-align:center;padding:20px 0;">
         <button class="btn btn-primary" onclick="showPage('page-final')">PROCEED TO FINAL CODE ▶</button>
       </div>
     </div>
@@ -1090,7 +1301,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
       <div class="victory-box">
         <div class="logo-box" style="margin-bottom:20px;">MISSION CRITICAL</div>
         <h2 style="margin-bottom:20px;">ENTER THE MASTER CODE</h2>
-        <p style="color:var(--muted);margin-bottom:24px;">Assemble your 5 fragments and enter the complete code below.</p>
+        <p style="color:var(--muted);margin-bottom:24px;">Assemble your 6 fragments and enter the complete code below.</p>
         <input type="text" id="final-code-inp" placeholder="_ _ _ _ _  _ _ _  _ _ _  _ _ _ _  _ _ _ _ _ _ _ _"
           style="text-align:center;font-family:var(--font-mono);font-size:18px;letter-spacing:3px;text-transform:uppercase;max-width:600px;"
           oninput="this.value=this.value.toUpperCase()">
@@ -1127,8 +1338,8 @@ input:focus, textarea:focus { border-color: var(--accent); }
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('tab-sessions')">SESSIONS</button>
         <button class="tab-btn" onclick="switchTab('tab-answers')">ANSWER KEYS</button>
-        <button class="tab-btn" onclick="switchTab('tab-codes')">LEVEL CODES</button>
-        <button class="tab-btn" onclick="switchTab('tab-oral')">ORAL CODES</button>
+        <button class="tab-btn" onclick="switchTab('tab-access')">ACCESS CODE</button>
+        <button class="tab-btn" onclick="switchTab('tab-oral')">ORAL GUIDE</button>
       </div>
 
       <!-- SESSIONS -->
@@ -1158,24 +1369,27 @@ input:focus, textarea:focus { border-color: var(--accent); }
         </div>
       </div>
 
-      <!-- LEVEL CODES -->
-      <div id="tab-codes" class="tab-content">
+      <!-- ACCESS CODE -->
+      <div id="tab-access" class="tab-content">
         <div class="card">
-          <h3 style="margin-bottom:16px;">LEVEL UNLOCK CODES</h3>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Enter these codes in the student interface to unlock the next level once all teams have finished the previous one.</p>
-          <table class="dash-table">
-            <thead><tr><th>LEVEL</th><th>UNLOCK CODE</th><th>FRAGMENTS REVEALED</th></tr></thead>
-            <tbody>
-              <tr><td>Level 2</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK2</span></td><td>Fragment 1: YOU</td></tr>
-              <tr><td>Level 3</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK3</span></td><td>Fragment 2: ARE</td></tr>
-              <tr><td>Level 4</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK4</span></td><td>Fragment 3: THE</td></tr>
-              <tr><td>Level 5</td><td><span style="font-family:var(--font-mono);color:var(--accent);">UNLOCK5</span></td><td>Fragment 4: BEST</td></tr>
-              <tr><td>Final Code</td><td colspan="2" style="color:var(--green);font-family:var(--font-mono);">YOU ARE THE BEST SALESTEAM</td></tr>
-            </tbody>
-          </table>
-          <div class="alert alert-info" style="margin-top:16px;">
-            <strong>Note:</strong> Level codes unlock the page but students still need to complete their current level exercises first. The system is managed client-side via localStorage.
+          <h3 style="margin-bottom:16px;">STUDENT ACCESS CODE</h3>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">This code is required for students to log in. Share it at the start of the session. You can change it at any time.</p>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;">
+            <div style="flex:1;">
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">CURRENT ACCESS CODE</label>
+              <input type="text" id="dash-student-code" style="font-family:var(--font-mono);font-size:18px;letter-spacing:2px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"/>
+            </div>
+            <button class="btn btn-primary" style="margin-top:20px;" onclick="saveStudentCode()">SAVE</button>
           </div>
+          <div id="dash-code-feedback" style="display:none;"></div>
+          <div class="alert alert-info" style="margin-top:8px;">
+            Default code: <strong style="font-family:var(--font-mono);">DEALFORCE2024</strong>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <h3 style="margin-bottom:12px;">MASTER CODE (Final answer)</h3>
+          <p style="font-family:var(--font-mono);font-size:20px;color:var(--green);letter-spacing:3px;">YOU ARE THE BEST SALESTEAM</p>
+          <p style="font-size:13px;color:var(--muted);margin-top:8px;">Fragments: YOU · ARE · THE · BEST · SALES · TEAM</p>
         </div>
       </div>
 
@@ -1228,7 +1442,7 @@ input:focus, textarea:focus { border-color: var(--accent); }
 
 const PROF_CODE = '0504';
 const FINAL_CODE = 'YOU ARE THE BEST SALESTEAM';
-const FRAGMENTS = ['YOU', 'ARE', 'THE', 'BEST', 'SALESTEAM'];
+const FRAGMENTS = ['YOU', 'ARE', 'THE', 'BEST', 'SALES', 'TEAM'];
 function goToLevel(n) {
   state.currentLevel = n;
   saveState();
@@ -1307,30 +1521,29 @@ const L3_SITUATIONS = [
 
 // ── Level 4 Matching data (Ex.1) ──
 const L4_EX1_PAIRS = [
-  { term:'Cold calling', def:'Contacting a prospect by phone without any prior relationship' },
-  { term:'Pipeline', def:'The set of deals at various stages of the sales process' },
-  { term:'Churn rate', def:'The percentage of customers who stop using a service in a period' },
-  { term:'Upselling', def:'Encouraging a customer to purchase a more expensive version of a product' },
-  { term:'Lead qualification', def:'The process of assessing whether a prospect is worth pursuing' },
-  { term:'Value proposition', def:'A statement explaining how your product solves a customer\'s problem' },
-  { term:'Conversion rate', def:'The percentage of prospects who become paying customers' },
-  { term:'Follow-up', def:'A contact made after an initial interaction to maintain engagement' },
-  { term:'BATNA', def:'The best course of action if a negotiation fails to reach an agreement' },
-  { term:'Onboarding', def:'The process of integrating and training a new client to use a product' },
+  { term:'Prospecting', def:'The active process of identifying and contacting potential new clients' },
+  { term:'Closing', def:'The final stage of a sale where the deal is confirmed and the contract signed' },
+  { term:'Stakeholder', def:'Any person or group with an interest in or influence over a commercial decision' },
+  { term:'Purchase order', def:'A formal document issued by a buyer to confirm a transaction with a supplier' },
+  { term:'SLA', def:'A contract defining the level of service a provider commits to delivering to a client' },
+  { term:'ROI', def:'A measure of the financial gain relative to the cost of an investment' },
+  { term:'Tender', def:'A formal invitation sent to suppliers to submit a competitive bid for a contract' },
+  { term:'Scope creep', def:'The gradual expansion of a project beyond its original objectives without adjustment of budget or timeline' },
+  { term:'Pain point', def:'A specific problem or challenge experienced by a prospect that a product aims to solve' },
+  { term:'Net Promoter Score', def:'A metric measuring how likely customers are to recommend a company to others' },
 ];
 
-// ── Level 4 Matching data (Ex.2) ──
 const L4_EX2_PAIRS = [
-  { term:'Cross-selling', def:'Offering a complementary product to an existing customer' },
-  { term:'Sales funnel', def:'A model showing the stages from first contact to final purchase' },
-  { term:'Account management', def:'Maintaining and developing long-term relationships with existing clients' },
-  { term:'Market share', def:'The percentage of total market sales held by one company' },
-  { term:'Objection handling', def:'Techniques for addressing concerns raised by a prospect' },
-  { term:'KPI', def:'A measurable value used to evaluate the success of commercial activities' },
-  { term:'Pitch deck', def:'A short presentation used to sell an idea or product to investors or clients' },
-  { term:'Discovery call', def:'An initial call to understand the prospect\'s needs and challenges' },
-  { term:'Win-win negotiation', def:'A negotiation outcome where both parties feel satisfied' },
-  { term:'CAC', def:'The total cost spent on acquiring one new paying customer' },
+  { term:'Benchmark', def:'A standard used to compare a company\'s performance against competitors or industry norms' },
+  { term:'RFP', def:'A document in which an organisation formally requests detailed proposals from potential suppliers' },
+  { term:'Due diligence', def:'A thorough investigation of a company or deal before committing to a commercial agreement' },
+  { term:'Profit margin', def:'The percentage of revenue remaining after all costs have been deducted' },
+  { term:'Channel partner', def:'An external company that sells or distributes a supplier\'s products on its behalf' },
+  { term:'Chargeback', def:'A forced reversal of a payment initiated by a client through their bank or card provider' },
+  { term:'White label', def:'A product manufactured by one company but sold under another company\'s brand' },
+  { term:'Contractual penalty', def:'A financial sanction applied when one party fails to meet the obligations defined in a contract' },
+  { term:'Escalation', def:'The process of referring an unresolved issue to a higher level of authority for resolution' },
+  { term:'MQL', def:'A lead that has shown enough interest to be considered ready for direct sales contact' },
 ];
 
 // ── Hints ──
@@ -1353,9 +1566,11 @@ let state = {
   currentLevel: 1,
   unlockedLevels: [1],
   completedExercises: {},
-  fragmentsCollected: [false,false,false,false,false],
+  fragmentsCollected: [false,false,false,false,false,false],
   l3DrawnMembers: [],
+  l3UsedSituations: [],
   l5DrawnMembers: [],
+  l6DrawnMembers: [],
   l4Ex1Matched: {},
   l4Ex2Matched: {},
   l4Ex1TimerRunning: false,
@@ -1435,9 +1650,15 @@ function toggleIncident(id) {
 // ══════════════════════════════════════════
 
 function studentLogin() {
+  const accessCode = document.getElementById('inp-student-code').value.trim().toUpperCase();
   const team = document.getElementById('inp-team').value.trim().toUpperCase();
   const err = document.getElementById('student-err');
   const caieReg = /^[A-Z]{2}-[A-Z]{2}$/i;
+
+  // Check student access code
+  const validCode = (localStorage.getItem('ndrc_student_code') || 'DEALFORCE2024').toUpperCase();
+  if (!accessCode) { err.textContent = 'Please enter the access code given by your teacher.'; err.style.display='block'; return; }
+  if (accessCode !== validCode) { err.textContent = 'Incorrect access code. Ask your teacher.'; err.style.display='block'; return; }
 
   if (!team) { err.textContent = 'Please enter a team name.'; err.style.display='block'; return; }
 
@@ -1506,6 +1727,7 @@ function initLevel(n) {
   if (n === 3) initLevel3();
   if (n === 4) initLevel4();
   if (n === 5) initLevel5();
+  if (n === 6) initLevel6();
 }
 
 // ══════════════════════════════════════════
@@ -1514,7 +1736,6 @@ function initLevel(n) {
 
 function initLevel1() {
   renderQCM('l1-ex1-questions', L1_EX1_DATA);
-  // Timer
   if (!state.completedExercises['l1e1'] && !state.l1TimerDone) {
     startTimer('l1-timer', 7*60, () => {
       state.l1TimerDone = true;
@@ -1522,17 +1743,17 @@ function initLevel1() {
       defer(()=>submitL1Ex1(true));
     });
   }
-  // Restore state
   if (state.completedExercises['l1e1']) {
     document.getElementById('l1-ex1-section').style.display = 'none';
-    if (!state.completedExercises['l1e2']) {
+    if (!state.completedExercises['l1e2'] && state.needsL1Ex2) {
       document.getElementById('l1-ex2-section').style.display = 'block';
       renderQCM('l1-ex2-questions', L1_EX2_DATA);
     }
   }
-  if (state.completedExercises['l1e2'] || (state.completedExercises['l1e1'] && !state.needsL1Ex2)) {
-    showL1Post();
-  }
+  // Only show post if ex1 passed OR ex2 completed
+  const ex1passed = state.completedExercises['l1e1']?.passed;
+  const ex2done = !!state.completedExercises['l1e2'];
+  if (ex1passed || ex2done) showL1Post();
 }
 
 function renderQCM(containerId, data) {
@@ -1608,6 +1829,7 @@ function submitL1Ex1(timedOut=false) {
       document.getElementById('l1-ex2-section').style.display = 'block';
       renderQCM('l1-ex2-questions', L1_EX2_DATA);
     }, 2000);
+    // Never go to showL1Post here — must complete ex2 first
   } else {
     saveState();
     setTimeout(showL1Post, 2000);
@@ -1775,22 +1997,23 @@ function initLevel3() {
 }
 
 function drawMemberL3(ex) {
-  const available = state.members.filter(m => !state.l3DrawnMembers.includes(m));
-  const pool = available.length > 0 ? available : state.members;
-  const drawn = pool[Math.floor(Math.random() * pool.length)];
+  if (!state.l3DrawnMembers) state.l3DrawnMembers = [];
+  if (!state.l3UsedSituations) state.l3UsedSituations = [];
+
+  const drawn = smartDraw(state.l3DrawnMembers);
   state.l3DrawnMembers.push(drawn);
 
-  const drawnEl = document.getElementById(`l3-drawn${ex}`);
   document.getElementById(`l3-member${ex}-name`).textContent = drawn;
-  drawnEl.style.display = 'block';
+  document.getElementById(`l3-drawn${ex}`).style.display = 'block';
 
-  // Show situation
-  const sitIdx = Math.floor(Math.random() * L3_SITUATIONS.length);
-  const sitSection = document.getElementById(`l3-ex${ex}-situation`);
+  // Guarantee different situation from previous exercise
+  let availSits = L3_SITUATIONS.map((_,i) => i).filter(i => !state.l3UsedSituations.includes(i));
+  if (availSits.length === 0) availSits = L3_SITUATIONS.map((_,i) => i);
+  const sitIdx = availSits[Math.floor(Math.random() * availSits.length)];
+  state.l3UsedSituations.push(sitIdx);
+
   document.getElementById(`l3-situation${ex}-text`).textContent = L3_SITUATIONS[sitIdx];
-  sitSection.style.display = 'block';
-
-  // Show unlock input
+  document.getElementById(`l3-ex${ex}-situation`).style.display = 'block';
   document.getElementById(`l3-ex${ex}-unlock`).style.display = 'block';
   saveState();
 }
@@ -1913,10 +2136,12 @@ function renderMatching(containerId, pairs, ex) {
   `;
 }
 
+// pending[termIdx] = defIdx — stores current association before submit
+let matchPending = { 1: {}, 2: {} };
+
 function selectMatchTerm(cid, termIdx, ex) {
   const matched = ex===1 ? state.l4Ex1Matched : state.l4Ex2Matched;
-  if (matched[termIdx] !== undefined) return;
-  // Deselect previous
+  if (matched[termIdx] !== undefined) return; // already validated
   document.querySelectorAll(`#${cid}-terms .match-item`).forEach(el => el.classList.remove('selected'));
   matchState = { ex, cid, selectedTerm: termIdx };
   document.getElementById(`${cid}-term-${termIdx}`)?.classList.add('selected');
@@ -1925,89 +2150,139 @@ function selectMatchTerm(cid, termIdx, ex) {
 function selectMatchDef(cid, defIdx, ex) {
   if (matchState.selectedTerm === null || matchState.ex !== ex) return;
   const matched = ex===1 ? state.l4Ex1Matched : state.l4Ex2Matched;
-  // Check if def already matched
+  const pending = matchPending[ex];
+  const termIdx = matchState.selectedTerm;
+
+  // Already confirmed matched def — skip
   if (Object.values(matched).includes(defIdx)) return;
 
-  const termIdx = matchState.selectedTerm;
-  const pairs = ex===1 ? L4_EX1_PAIRS : L4_EX2_PAIRS;
-  const isCorrect = pairs[termIdx].def === pairs[defIdx].def;
-
-  if (isCorrect) {
-    matched[termIdx] = defIdx;
-    document.getElementById(`${cid}-term-${termIdx}`)?.classList.remove('selected');
-    document.getElementById(`${cid}-term-${termIdx}`)?.classList.add('matched');
-    document.getElementById(`${cid}-def-${defIdx}`)?.classList.add('matched');
-    matchState.selectedTerm = null;
-
-    const count = Object.keys(matched).length;
-    const countEl = document.getElementById(`l4-ex${ex}-match-count`);
-    const progEl = document.getElementById(`l4-ex${ex}-progress`);
-    if (countEl) countEl.textContent = `${count} / 10`;
-    if (progEl) progEl.style.width = `${count*10}%`;
-
-    if (count === 10) {
-      const submitBtn = document.getElementById(`l4-ex${ex}-submit`);
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'SUBMIT RESULTS'; }
+  // Remove previous pending highlight for this term
+  const prevDef = pending[termIdx];
+  if (prevDef !== undefined) {
+    document.getElementById(`${cid}-def-${prevDef}`)?.classList.remove('selected');
+  }
+  // Remove any other pending that pointed to this def
+  Object.keys(pending).forEach(t => {
+    if (pending[t] === defIdx && parseInt(t) !== termIdx) {
+      document.getElementById(`${cid}-term-${t}`)?.classList.remove('pending');
+      delete pending[t];
     }
-    saveState();
-  } else {
-    const termEl = document.getElementById(`${cid}-term-${termIdx}`);
-    const defEl = document.getElementById(`${cid}-def-${defIdx}`);
-    termEl?.classList.add('wrong-match');
-    defEl?.classList.add('wrong-match');
-    setTimeout(()=>{
-      termEl?.classList.remove('wrong-match','selected');
-      defEl?.classList.remove('wrong-match');
-    }, 400);
-    matchState.selectedTerm = null;
+  });
+
+  // Store pending association
+  pending[termIdx] = defIdx;
+
+  // Visual: highlight both as pending (blue/yellow, not green/red)
+  document.getElementById(`${cid}-term-${termIdx}`)?.classList.remove('selected');
+  document.getElementById(`${cid}-term-${termIdx}`)?.classList.add('pending');
+  document.getElementById(`${cid}-def-${defIdx}`)?.classList.add('pending');
+
+  matchState.selectedTerm = null;
+
+  // Update count display
+  const count = Object.keys(pending).length;
+  const countEl = document.getElementById(`l4-ex${ex}-match-count`);
+  const progEl = document.getElementById(`l4-ex${ex}-progress`);
+  if (countEl) countEl.textContent = `${count} / 10`;
+  if (progEl) progEl.style.width = `${count*10}%`;
+
+  // Enable submit when all 10 paired
+  if (count === 10) {
+    const submitBtn = document.getElementById(`l4-ex${ex}-submit`);
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'SUBMIT RESULTS'; }
   }
 }
 
 function submitL4Ex1(timedOut=false) {
   if (state.completedExercises['l4e1']) return;
   clearTimerById('l4-timer1');
-  const correct = Object.keys(state.l4Ex1Matched||{}).length;
+  const cid = 'l4-ex1-matching';
+  const pairs = L4_EX1_PAIRS;
+  const pending = matchPending[1];
+  let correct = 0;
+
+  // Grade each pending association and show green/red
+  pairs.forEach((p, termIdx) => {
+    const defIdx = pending[termIdx];
+    const termEl = document.getElementById(`${cid}-term-${termIdx}`);
+    const defEl = defIdx !== undefined ? document.getElementById(`${cid}-def-${defIdx}`) : null;
+    const correctDefIdx = termIdx; // pairs[termIdx].def === pairs[termIdx].def
+    const isCorrect = defIdx === termIdx;
+
+    if (termEl) { termEl.classList.remove('pending','selected'); termEl.classList.add(isCorrect ? 'matched' : 'wrong-match-final'); }
+    if (defEl) { defEl.classList.remove('pending'); defEl.classList.add(isCorrect ? 'matched' : 'wrong-match-final'); }
+    if (isCorrect) correct++;
+
+    // Show correct def in green if wrong
+    if (!isCorrect) {
+      const correctEl = document.getElementById(`${cid}-def-${termIdx}`);
+      if (correctEl) correctEl.classList.add('correct-reveal');
+    }
+  });
+
   const passed = correct >= 8;
-  state.completedExercises['l4e1'] = { score:correct, passed };
+  state.l4Ex1Matched = pending;
+  state.completedExercises['l4e1'] = { score: correct, passed };
   const fb = document.getElementById('l4-ex1-feedback');
   fb.style.display = 'block';
   const timeMsg = timedOut ? ' (timer ran out)' : '';
   fb.innerHTML = passed
-    ? alertHtml(`✅ ${correct}/10 matched — +50 pts${timeMsg}`, 'success')
-    : alertHtml(`❌ ${correct}/10 matched — Need ≥8. –10 pts. Round 2 unlocked.${timeMsg}`, 'danger');
+    ? alertHtml(`✅ ${correct}/10 correct — +50 pts${timeMsg}`, 'success')
+    : alertHtml(`❌ ${correct}/10 correct — Need ≥8. –10 pts. Round 2 unlocked.${timeMsg}`, 'danger');
   addScore(passed ? 50 : -10);
   document.getElementById('l4-ex1-submit').disabled = true;
   if (!passed) {
     state.needsL4Ex2 = true;
     saveState();
-    setTimeout(()=>{
+    setTimeout(() => {
       document.getElementById('l4-ex1-section').style.display = 'none';
       document.getElementById('l4-ex2-section').style.display = 'block';
       renderMatching('l4-ex2-matching', L4_EX2_PAIRS, 2);
-      startTimer('l4-timer2', 8*60, ()=>{ addScore(-10); defer(()=>submitL4Ex2(true)); });
-    }, 2000);
+      startTimer('l4-timer2', 8*60, () => { addScore(-10); defer(() => submitL4Ex2(true)); });
+    }, 2500);
   } else {
     saveState();
-    setTimeout(showL4Post, 2000);
+    setTimeout(showL4Post, 2500);
   }
 }
 
 function submitL4Ex2(timedOut=false) {
   if (state.completedExercises['l4e2']) return;
   clearTimerById('l4-timer2');
-  const correct = Object.keys(state.l4Ex2Matched||{}).length;
+  const cid = 'l4-ex2-matching';
+  const pairs = L4_EX2_PAIRS;
+  const pending = matchPending[2];
+  let correct = 0;
+
+  pairs.forEach((p, termIdx) => {
+    const defIdx = pending[termIdx];
+    const termEl = document.getElementById(`${cid}-term-${termIdx}`);
+    const defEl = defIdx !== undefined ? document.getElementById(`${cid}-def-${defIdx}`) : null;
+    const isCorrect = defIdx === termIdx;
+
+    if (termEl) { termEl.classList.remove('pending','selected'); termEl.classList.add(isCorrect ? 'matched' : 'wrong-match-final'); }
+    if (defEl) { defEl.classList.remove('pending'); defEl.classList.add(isCorrect ? 'matched' : 'wrong-match-final'); }
+    if (isCorrect) correct++;
+
+    if (!isCorrect) {
+      const correctEl = document.getElementById(`${cid}-def-${termIdx}`);
+      if (correctEl) correctEl.classList.add('correct-reveal');
+    }
+  });
+
   const passed = correct >= 8;
-  state.completedExercises['l4e2'] = { score:correct, passed };
+  state.l4Ex2Matched = pending;
+  state.completedExercises['l4e2'] = { score: correct, passed };
   const fb = document.getElementById('l4-ex2-feedback');
   fb.style.display = 'block';
   const timeMsg = timedOut ? ' (timer ran out)' : '';
   fb.innerHTML = passed
-    ? alertHtml(`✅ ${correct}/10 matched — +50 pts${timeMsg}`, 'success')
-    : alertHtml(`❌ ${correct}/10 matched — –10 pts.${timeMsg}`, 'danger');
+    ? alertHtml(`✅ ${correct}/10 correct — +50 pts${timeMsg}`, 'success')
+    : alertHtml(`❌ ${correct}/10 correct — –10 pts.${timeMsg}`, 'danger');
   addScore(passed ? 50 : -10);
   document.getElementById('l4-ex2-submit').disabled = true;
   saveState();
-  setTimeout(showL4Post, 2000);
+  setTimeout(showL4Post, 2500);
 }
 
 function showL4Post() {
@@ -2038,9 +2313,8 @@ function initLevel5() {
 }
 
 function drawMemberL5(ex) {
-  const available = state.members.filter(m => !state.l5DrawnMembers.includes(m));
-  const pool = available.length > 0 ? available : state.members;
-  const drawn = pool[Math.floor(Math.random() * pool.length)];
+  if (!state.l5DrawnMembers) state.l5DrawnMembers = [];
+  const drawn = smartDraw(state.l5DrawnMembers);
   state.l5DrawnMembers.push(drawn);
   document.getElementById(`l5-member${ex}-name`).textContent = drawn;
   document.getElementById(`l5-drawn${ex}`).style.display = 'block';
@@ -2078,6 +2352,9 @@ function unlockL5(ex) {
       setTimeout(() => {
         document.getElementById(`l5-ex${ex}-section`).style.display = 'none';
         document.getElementById(`l5-ex${ex+1}-section`).style.display = 'block';
+        // Reveal next incident file progressively
+        const nextFile = document.getElementById(`inc${ex+1}`);
+        if (nextFile) nextFile.style.display = 'block';
       }, 1500);
     } else {
       fb.innerHTML = alertHtml(`❌ Score: ${val}/10 — –10 pts. Fragment unlocked anyway.`, 'danger');
@@ -2097,9 +2374,107 @@ function showL5Post() {
   saveState();
 }
 
+// ── Global drawn members tracker ──
+function getAllDrawnMembers() {
+  return [
+    ...(state.l3DrawnMembers || []),
+    ...(state.l5DrawnMembers || []),
+    ...(state.l6DrawnMembers || []),
+  ];
+}
+
+// ── Smart draw: never same member twice in a level, prioritise least-seen globally ──
+function smartDraw(levelDrawn) {
+  // 1. Not yet drawn in this level
+  let pool = state.members.filter(m => !levelDrawn.includes(m));
+  // 2. Among those, prefer not drawn at all globally
+  const global = getAllDrawnMembers();
+  const fresh = pool.filter(m => !global.includes(m));
+  if (fresh.length > 0) pool = fresh;
+  // 3. Ultimate fallback
+  if (pool.length === 0) pool = [...state.members];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 // ══════════════════════════════════════════
-// FINAL CODE
+// LEVEL 6
 // ══════════════════════════════════════════
+
+function initLevel6() {
+  if (!state.l6DrawnMembers) state.l6DrawnMembers = [];
+  const l6ex = state.l6CurrentEx || 1;
+  for (let i=1;i<=3;i++) {
+    document.getElementById(`l6-ex${i}-section`).style.display = i===l6ex ? 'block' : 'none';
+  }
+  if (state.fragmentsCollected[5]) showL6Post();
+}
+
+function drawMemberL6(ex) {
+  const drawn = smartDraw(state.l6DrawnMembers);
+  state.l6DrawnMembers.push(drawn);
+  document.getElementById(`l6-member${ex}-name`).textContent = drawn;
+  document.getElementById(`l6-drawn${ex}`).style.display = 'block';
+  document.getElementById(`l6-ex${ex}-unlock`).style.display = 'block';
+  saveState();
+}
+
+function unlockL6(ex) {
+  const thresholds = { 1: 8, 2: 7, 3: 7 };
+  const val = parseInt(document.getElementById(`l6-code${ex}-inp`).value);
+  const err = document.getElementById(`l6-ex${ex}-err`);
+  if (isNaN(val) || val < 1 || val > 10) {
+    err.textContent = 'Please enter a score between 1 and 10.';
+    err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
+  const passed = val >= thresholds[ex];
+  state.completedExercises[`l6e${ex}`] = { score: val, passed };
+  addScore(passed ? 50 : -10);
+  const fb = document.getElementById(`l6-ex${ex}-feedback`);
+  fb.style.display = 'block';
+
+  if (passed) {
+    fb.innerHTML = alertHtml(`✅ Score: ${val}/10 — Well argued! +50 pts`, 'success');
+    saveState();
+    setTimeout(() => {
+      document.getElementById(`l6-ex${ex}-section`).style.display = 'none';
+      showL6Post();
+    }, 1500);
+  } else {
+    if (ex < 3) {
+      fb.innerHTML = alertHtml(`❌ Score: ${val}/10 — Below threshold (≥${thresholds[ex]}). –10 pts. Exercise ${ex+1} unlocked.`, 'danger');
+      state.l6CurrentEx = ex + 1;
+      saveState();
+      setTimeout(() => {
+        document.getElementById(`l6-ex${ex}-section`).style.display = 'none';
+        document.getElementById(`l6-ex${ex+1}-section`).style.display = 'block';
+        // Reveal next situation card and briefing box
+        const cardMap = {2:'l6-card-b', 3:'l6-card-c'};
+        const sitMap  = {2:'l6-sit-b', 3:'l6-sit-c'};
+        if (cardMap[ex+1]) { document.getElementById(cardMap[ex+1]).style.display='block'; }
+        if (sitMap[ex+1])  { document.getElementById(sitMap[ex+1]).style.display='block'; }
+      }, 1500);
+    } else {
+      fb.innerHTML = alertHtml(`❌ Score: ${val}/10 — –10 pts. Fragment unlocked anyway.`, 'danger');
+      saveState();
+      setTimeout(showL6Post, 1500);
+    }
+  }
+}
+
+function showL6Post() {
+  for (let i=1;i<=3;i++) {
+    const s = document.getElementById(`l6-ex${i}-section`);
+    if (s) s.style.display = 'none';
+  }
+  document.getElementById('l6-hint-section').style.display = 'block';
+  document.getElementById('l6-fragment-section').style.display = 'block';
+  document.getElementById('l6-fragment-word').textContent = FRAGMENTS[5];
+  state.fragmentsCollected[5] = true;
+  updateHUD();
+  document.getElementById('l6-next-section').style.display = 'block';
+  saveState();
+}
 
 function submitFinalCode() {
   const inp = document.getElementById('final-code-inp').value.trim().toUpperCase();
@@ -2162,10 +2537,24 @@ function switchTab(id) {
   event.target.classList.add('active');
 }
 
+function saveStudentCode() {
+  const code = document.getElementById('dash-student-code').value.trim().toUpperCase();
+  if (!code) return;
+  localStorage.setItem('ndrc_student_code', code);
+  const fb = document.getElementById('dash-code-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = alertHtml(`✅ Access code updated to: ${code}`, 'success');
+  setTimeout(() => fb.style.display='none', 3000);
+}
+
 function renderDashboard() {
   renderSessionsTable();
   renderAnswerKeys();
   renderL3Situations();
+  // Load current student code
+  const code = localStorage.getItem('ndrc_student_code') || 'DEALFORCE2024';
+  const inp = document.getElementById('dash-student-code');
+  if (inp) inp.value = code;
 }
 
 function renderSessionsTable() {
@@ -2241,24 +2630,146 @@ function renderL3Situations() {
 // ══════════════════════════════════════════
 
 function generatePDFReport() {
-  const w = window.open('','_blank');
-  const exList = Object.entries(state.completedExercises).map(([k,v]) =>
-    `<tr><td>${k.toUpperCase()}</td><td>${v.passed?'✅ Pass':'❌ Fail'}</td><td>${v.score!==undefined?v.score:'—'}</td></tr>`
-  ).join('');
+  const w = window.open('', '_blank');
+  const ex = state.completedExercises;
+
+  function pct(score, total) {
+    return total ? Math.round((score / total) * 100) : 0;
+  }
+
+  function qcmDetail(data, key, label) {
+    const res = ex[key];
+    if (!res) return `<p style="color:#999;font-style:italic;">${label} — not completed</p>`;
+    let html = `<h3 style="margin:16px 0 8px;">${label} — ${res.score}/${data.length} (${pct(res.score, data.length)}%) — <span style="color:${res.passed?'#1a7c3a':'#c0392b'}">${res.passed ? '✅ PASS' : '❌ FAIL'}</span></h3>`;
+    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">';
+    html += '<thead><tr><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">#</th><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Question</th><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Correct answer</th><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Result</th></tr></thead><tbody>';
+    // We can't reconstruct per-question results from current state — show answer key with overall score note
+    data.forEach((q, i) => {
+      html += `<tr>
+        <td style="border:1px solid #ddd;padding:6px;text-align:center;">${i+1}</td>
+        <td style="border:1px solid #ddd;padding:6px;">${q.q}</td>
+        <td style="border:1px solid #ddd;padding:6px;color:#1a7c3a;font-weight:bold;">${q.opts[q.ans]}</td>
+        <td style="border:1px solid #ddd;padding:6px;text-align:center;">—</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function tfDetail() {
+    const res = ex['l2e1'];
+    if (!res) return `<p style="color:#999;font-style:italic;">Level 2 Ex.1 T/F — not completed</p>`;
+    let html = `<h3 style="margin:16px 0 8px;">Level 2 — Ex.1 True/False — ${res.score}/10 (${pct(res.score,10)}%) — <span style="color:${res.passed?'#1a7c3a':'#c0392b'}">${res.passed ? '✅ PASS' : '❌ FAIL'}</span></h3>`;
+    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">';
+    html += '<thead><tr><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">#</th><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Statement</th><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Answer</th></tr></thead><tbody>';
+    L2_TF_DATA.forEach((q, i) => {
+      html += `<tr><td style="border:1px solid #ddd;padding:6px;text-align:center;">${i+1}</td><td style="border:1px solid #ddd;padding:6px;">${q.s}</td><td style="border:1px solid #ddd;padding:6px;font-weight:bold;color:#1a7c3a;">${q.ans ? 'TRUE' : 'FALSE'}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function matchDetail(pairs, key, label) {
+    const res = ex[key];
+    if (!res) return `<p style="color:#999;font-style:italic;">${label} — not completed</p>`;
+    const pending = key === 'l4e1' ? (state.l4Ex1Matched || {}) : (state.l4Ex2Matched || {});
+    let html = `<h3 style="margin:16px 0 8px;">${label} — ${res.score}/10 (${pct(res.score,10)}%) — <span style="color:${res.passed?'#1a7c3a':'#c0392b'}">${res.passed ? '✅ PASS' : '❌ FAIL'}</span></h3>`;
+    html += '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px;">';
+    html += '<thead><tr><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Term</th><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Correct definition</th><th style="border:1px solid #ddd;padding:6px;background:#f0f0f0;">Result</th></tr></thead><tbody>';
+    pairs.forEach((p, termIdx) => {
+      const chosenDefIdx = pending[termIdx];
+      const isCorrect = chosenDefIdx === termIdx;
+      const color = isCorrect ? '#1a7c3a' : '#c0392b';
+      const icon = isCorrect ? '✅' : '❌';
+      html += `<tr style="background:${isCorrect ? '#f0fff4' : '#fff5f5'}">
+        <td style="border:1px solid #ddd;padding:6px;font-weight:bold;">${p.term}</td>
+        <td style="border:1px solid #ddd;padding:6px;color:#1a7c3a;">${p.def}</td>
+        <td style="border:1px solid #ddd;padding:6px;text-align:center;color:${color};">${icon}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    return html;
+  }
+
+  function oralDetail(key, label) {
+    const res = ex[key];
+    if (!res) return '';
+    return `<tr style="background:${res.passed?'#f0fff4':'#fff5f5'}">
+      <td style="border:1px solid #ddd;padding:6px;">${label}</td>
+      <td style="border:1px solid #ddd;padding:6px;text-align:center;">${res.score}/10</td>
+      <td style="border:1px solid #ddd;padding:6px;text-align:center;font-weight:bold;color:${res.passed?'#1a7c3a':'#c0392b'}">${res.passed?'✅ PASS':'❌ FAIL'}</td>
+    </tr>`;
+  }
+
+  const totalEx = Object.keys(ex).length;
+  const passedEx = Object.values(ex).filter(v => v.passed).length;
+
   w.document.write(`<!DOCTYPE html><html><head><title>Report — ${state.team}</title>
-  <style>body{font-family:Arial;padding:30px;} table{border-collapse:collapse;width:100%;} td,th{border:1px solid #ccc;padding:8px;}</style>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 30px; color: #222; font-size: 14px; }
+    h1 { color: #1a3a6b; border-bottom: 2px solid #1a3a6b; padding-bottom: 8px; }
+    h2 { color: #2563eb; margin-top: 24px; }
+    h3 { color: #374151; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+    .summary-box { background: #f8faff; border: 1px solid #d1d5db; border-radius: 6px; padding: 12px; text-align: center; }
+    .summary-box .val { font-size: 28px; font-weight: bold; color: #1a3a6b; }
+    .summary-box .lbl { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 6px 8px; }
+    th { background: #f3f4f6; }
+    @media print { body { padding: 10px; } }
+  </style>
   </head><body>
-  <h1>Escape Game — DealForce Startup</h1>
-  <h2>Team: ${state.team}</h2>
-  <p>Members: ${state.members.join(', ')}</p>
-  <p>Final Score: <strong>${state.score} pts</strong></p>
-  <p>Fragments collected: ${state.fragmentsCollected.filter(Boolean).length}/5</p>
-  <h3>Exercise Results</h3>
-  <table><thead><tr><th>Exercise</th><th>Result</th><th>Score</th></tr></thead><tbody>${exList}</tbody></table>
-  <p style="margin-top:20px;font-size:12px;color:#999;">Generated: ${new Date().toLocaleString('fr-FR')} — Créé par C. Iemfre</p>
+  <h1>🏆 Escape Game Report — DealForce Startup</h1>
+
+  <div class="summary-grid">
+    <div class="summary-box"><div class="val">${state.team}</div><div class="lbl">Team name</div></div>
+    <div class="summary-box"><div class="val" style="color:#d97706;">${state.score} pts</div><div class="lbl">Final score</div></div>
+    <div class="summary-box"><div class="val">${state.fragmentsCollected.filter(Boolean).length}/6</div><div class="lbl">Fragments collected</div></div>
+    <div class="summary-box"><div class="val">${passedEx}/${totalEx}</div><div class="lbl">Exercises passed</div></div>
+  </div>
+
+  <p><strong>Members:</strong> ${state.members.join(' · ')}</p>
+  <p><strong>Mission complete:</strong> ${state.missionComplete ? '✅ YES' : '❌ Not yet'}</p>
+
+  <h2>LEVEL 1 — The Sales Briefing Room</h2>
+  ${qcmDetail(L1_EX1_DATA, 'l1e1', 'Exercise 1 — Sales Vocabulary QCM (timer 7 min) — Pass ≥10/12')}
+  ${ex['l1e2'] ? qcmDetail(L1_EX2_DATA, 'l1e2', 'Exercise 2 — Sales Vocabulary QCM Round 2 — Pass ≥10/12') : ''}
+
+  <h2>LEVEL 2 — The Market Intelligence Hub</h2>
+  ${tfDetail()}
+  ${qcmDetail(L2_QCM_DATA, 'l2e2', 'Level 2 — Ex.2 Comprehension QCM — Pass ≥7/8')}
+
+  <h2>LEVEL 3 — The Pitch Room</h2>
+  <table><thead><tr><th>Exercise</th><th>Score</th><th>Result</th></tr></thead><tbody>
+    ${oralDetail('l3e1','Level 3 — Ex.1 Oral Pitch (pass ≥8)')}
+    ${oralDetail('l3e2','Level 3 — Ex.2 Oral Pitch (pass ≥7)')}
+  </tbody></table>
+
+  <h2>LEVEL 4 — The Negotiation Lab</h2>
+  ${matchDetail(L4_EX1_PAIRS, 'l4e1', 'Exercise 1 — Matching (timer 6 min) — Pass ≥8/10')}
+  ${ex['l4e2'] ? matchDetail(L4_EX2_PAIRS, 'l4e2', 'Exercise 2 — Matching (timer 8 min) — Pass ≥8/10') : ''}
+
+  <h2>LEVEL 5 — The Boardroom</h2>
+  <table><thead><tr><th>Exercise</th><th>Score</th><th>Result</th></tr></thead><tbody>
+    ${oralDetail('l5e1','Level 5 — Ex.1 Board Report (pass ≥8)')}
+    ${oralDetail('l5e2','Level 5 — Ex.2 Board Report (pass ≥7)')}
+    ${oralDetail('l5e3','Level 5 — Ex.3 Board Report (pass ≥7)')}
+  </tbody></table>
+
+  <h2>LEVEL 6 — The Investor Pitch Stage</h2>
+  <table><thead><tr><th>Exercise</th><th>Score</th><th>Result</th></tr></thead><tbody>
+    ${oralDetail('l6e1','Level 6 — Ex.1 Pitch: SmartSite Pro (pass ≥8)')}
+    ${oralDetail('l6e2','Level 6 — Ex.2 Pitch: SolarEase (pass ≥7)')}
+    ${oralDetail('l6e3','Level 6 — Ex.3 Pitch: PulseHR (pass ≥7)')}
+  </tbody></table>
+
+  <p style="margin-top:30px;font-size:11px;color:#999;border-top:1px solid #eee;padding-top:10px;">
+    Generated: ${new Date().toLocaleString('fr-FR')} — Escape Game DealForce Startup — Créé par C. Iemfre
+  </p>
   </body></html>`);
   w.document.close();
-  setTimeout(()=>w.print(), 300);
+  setTimeout(() => w.print(), 400);
 }
 
 // ══════════════════════════════════════════
